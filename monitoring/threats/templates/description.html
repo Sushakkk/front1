@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ru" class="detail-html">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Детализация</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+</head>
+<body class="request-body">
+    <div class="detail-container">
+        <a href="{% url 'threats_list' %}" class="back-button">Назад</a>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Угроза</th>
+                    <th>Описание</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{{ threat.name }}</td>
+                    <td>{{ threat.description }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
