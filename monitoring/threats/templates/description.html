@@ -4,17 +4,17 @@
     <meta charset='utf-8'>
     {% load static %}
     <link rel="stylesheet" href="{% static 'styles.css' %}"/>
-    <title>Main page</title>
+    <title>Описание</title>
 </head>
 <body>
 <div class="site-header">
     <a href="/"><div class="site-name">Мониторинг угроз</div></a>
 </div>
 <div class="site-body">
-    <div class="card card-page">
+    <div class="card_overview">
         <div class="card__content">
             <h3 class="card__name">{{ threat.name }} </h3>
-            <div class="card_description"> {{ threat.escription}}</div>
+            <div class="card_description"> {{ threat.description}}</div>
             <div class="card__statistics">
                 <div class="card__statistics__header">Статистика</div>
                 <div class="card__statistics__item">

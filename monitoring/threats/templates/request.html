@@ -16,15 +16,17 @@
                 <tr>
                     <th>Тип угрозы</th>
                     <th>Описание</th>
+                    <th>Цена</th>
                     <th>Статус</th>
                 </tr>
             </thead>
             <tbody>
                 {% for threat in current_threats %}
                 <tr>
-                    <td>asd</td>
-                    <td>qweqwe</td>
-                    <td>10</td>
+                    <td>{{ threat.name }}</td>
+                    <td>{{ threat.short_description }}</td>
+                    <td>{{ threat.price }}</td>
+                    <td>{{ threat.status }}</td>
                 </tr>
                 {% endfor %}
             </tbody>

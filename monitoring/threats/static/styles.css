@@ -14,31 +14,44 @@ a:link {
   }
 
 .site-name {
-    margin-top: 12px;
-    margin-left: 2%;
     font-size: 1.25em;
 }
 
+.site-name:hover {
+    color: #00A88E;
+}
+
 .current-request {
-    margin-top: 1px;
-    margin-left: 80%;
     font-size: 1.25em;
+    margin-left: -30%;
 }
 
 .current-request:hover {
     color: #00A88E;
 }
 
-.current-request:hover .current-request-title {
-    color: #00A88E;
+.site-header {
+    display: flex;
+    justify-content: space-between; /* Распределяет элементы по горизонтали с равными промежутками */
+    align-items: center; /* Выравнивает элементы по вертикали по центру */
+    width: auto;
+    background-color: #333;
+    padding: 10px 20px;
+    height: 130%;
 }
 
-.site-header {
-    width: 100%;
-}
 
 .cards-list {
     margin-top: 20px;
+    width: 50%;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+
+    row-gap: 40px; /*асстояние между карточками по вертикали*/
+    column-gap: 100px; /*расстояние между карточками по горизонтали*/
+
+    align-items: stretch; /* Растягивает карточки по высоте */
+    margin-left: 8%;
 }
 
 .card__content {
@@ -48,24 +61,35 @@ a:link {
     color: white;
 }
 
-.card_description {
+/* взято частично из https://vuejs.org/partners/ */
+@import"https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap";
+.card {
+    background-color: #1a1a1a;
+    padding: 24px 30px;
+    border-radius: 4px;
+    border-color: #555;
+    box-shadow: 0 12px 12px #ffffff0d;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    font-size: 15px;
+    transition: background-color .5s,box-shadow .25s ease,border-color .25s ease;
 
+    border: 1px solid rgba(60, 60, 60, .12);
+
+    height: 100%;
+    justify-content: space-between;
+    box-sizing: border-box;
 }
 
-.card {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background-color: rgb(46, 44, 44);
-    height: 300px;
-    /*border: 1px solid #ccc;*/
-    border-radius: 5px;
-    padding: 10px;
-    margin-bottom: 10px;
+.card:hover {
+    box-shadow: 0 12px 12px #0000001a;
+    border-color: #555
 }
 
 a {
     text-decoration: none;
+    color: #fff;
 }
 
 .card__name {
@@ -74,8 +98,8 @@ a {
 
 .card__image {
     flex-basis: 50%;
-    height: 90%;
-    margin-right: 12px;
+    height: 100%;
+    margin-top: 5%;
 }
 
 .card:hover .card__name {
@@ -85,14 +109,13 @@ a {
 .card__statistics {
     margin-top: 20px;
 }
-.search {
-
-}
 
 .site-body {
     margin-top: 40px;
-    margin-left: 20%;
-    margin-right: 20%;
+    margin-left: 15%;
+    margin-right: 15%;
+
+    align-items: center;
 }
 
 .search-bar {
@@ -116,6 +139,13 @@ a {
     border-radius: 3px;
 }
 
+.search-button:hover {
+    color:#00A88E;
+    transition-duration: .2s;
+    background-color: rgb(41, 39, 39);
+    cursor: pointer;
+}
+
 .search-bar:focus {
     outline: none !important;
     border:1px solid black;
@@ -132,10 +162,50 @@ a {
     font-size: 1.1em;
 }
 
-.card-page:hover .card__name {
-    color: white;
+.card_overview {
+    background-color: #1a1a1a;
+    padding: 24px 30px;
+    box-shadow: 0 12px 12px #ffffff0d;
+    display: flex;
+    flex-direction: column;
+    font-size: 15px;
+    height: auto;
 }
 
-.card-page .card__name {
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.data-table th, .data-table td {
+    padding: 12px;
+    border: 1px solid #555;
+    text-align: left;
+}
+
+.data-table th {
+    background-color: #333;
     color: #00A88E;
+    font-size: 1em;
+}
+
+.data-table td {
+    background-color: #1a1a1a;
+    color: white;
+    font-size: 1em;
+}
+
+.data-table tr:nth-child(even) {
+    background-color: #2a2a2a;
+}
+
+.data-table tr:hover {
+    background-color: #333;
+}
+
+.data-table .status {
+    font-weight: bold;
+    color: #00A88E; /* Пример цвета для статуса */
 }
