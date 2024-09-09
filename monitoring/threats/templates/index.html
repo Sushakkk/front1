@@ -1,38 +1,38 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Панель мониторинга</title>
+    <meta charset='utf-8'>
     {% load static %}
-    <link rel="stylesheet" href="{% static 'styles.css' %}">
+    <link rel="stylesheet" href="{% static 'styles.css' %}"/>
+    <title>Главная</title>
 </head>
 <body>
-
-
-    <form action="/" method="get">
-        <div class="search-container">
-            <input name="threat_name" type="text" value="{{ input_value }}" class="search-input">
+<div class="site-header">
+    <a href="/"><div class="site-name">Мониторинг угроз</div></a>
+    <a href="/current"><div class="current-request">Текущая заявка ({{ current_count }})</div></a>
+</div>
+<div class="site-body">
+    <div class="search">
+        <form action="/" method="GET">
+            <input type="text" name="threat_name" value="{{ input_value }}" class="search-bar">
             <input type="submit" value="Поиск" class="search-button">
-            <a href="{% url 'threat_request'%}" class="current-request">Текущая заявка ({{ total_requests }})</a>
-        </div>
-    </form>
-
-    
-
-    <div class="container">
-        {% for threat in threats %}
-        <div class="card">
-            <div class="info">
-                <img src="{{ threat.img_url }}" class="image">
-                <p class="title">{{ threat.name }}</p>
-                <p class="short-description">{{ threat.short_description }}</p>
-            </div>
-            <div class="down">
-                <a href="{% url 'threat_description' threat.id %}" class="text-item">Сообщить</a>
-            </div>
-        </div>
-        {% endfor %}
+        </form>
     </div>
+    <div class="cards-list">
+            {% for threat in threats %}
+            <a href="/threat/{{ threat.id }}">
+                <div class="card">
+                    <div class="card__content">
+                        <h3 class="card__name">{{ threat.name }} </h3>
+                        <div class="card_description"> {{ threat.short_description }}</div>
+                    </div>
+                    <image src="{{ threat.img_url }}" class="card__image"></image>
+                </div>
+            </a>
+
+            {% endfor %}
+        
+    </div>
+</div>
 </body>
 </html>

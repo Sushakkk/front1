@@ -1,29 +1,31 @@
 <!DOCTYPE html>
-<html lang="ru" class="detail-html">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Детализация</title>
+    <meta charset='utf-8'>
     {% load static %}
-    <link rel="stylesheet" href="{% static 'styles.css' %}">
+    <link rel="stylesheet" href="{% static 'styles.css' %}"/>
+    <title>Main page</title>
 </head>
-<body class="request-body">
-    <div class="detail-container">
-        <a href="{% url 'threats_list' %}" class="back-button">Назад</a>
-        <table class="data-table">
-            <thead>
-                <tr>
-                    <th>Угроза</th>
-                    <th>Описание</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>{{ threat.name }}</td>
-                    <td>{{ threat.description }}</td>
-                </tr>
-            </tbody>
-        </table>
+<body>
+<div class="site-header">
+    <a href="/"><div class="site-name">Мониторинг угроз</div></a>
+</div>
+<div class="site-body">
+    <div class="card card-page">
+        <div class="card__content">
+            <h3 class="card__name">{{ threat.name }} </h3>
+            <div class="card_description"> {{ threat.escription}}</div>
+            <div class="card__statistics">
+                <div class="card__statistics__header">Статистика</div>
+                <div class="card__statistics__item">
+                    Количество обнаружений за последний год: {{ threat.count }}</div>
+                <div class="card__statistics__item">
+                    Средняя цена мониторинга(месяц): {{ threat.price }}
+                </div>
+            </div>
+        </div>
+        <image src="{{ threat.img_url }}" class="card__image"></image>
     </div>
+</div>
 </body>
 </html>

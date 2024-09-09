@@ -21,6 +21,6 @@ from threats import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.threats_list, name='threats_list'),
-    path('attack/<int:id>/', views.threat_description, name='threat_description'),
-    path('current-requests/', views.threat_request, name='threat_request'),
+    path('threat/<int:id>/', views.threat_description, name='threat_description'),
+    path('current/', views.threat_request, name='threat_request'),
 ]

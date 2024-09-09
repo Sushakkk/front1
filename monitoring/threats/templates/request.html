@@ -1,29 +1,30 @@
 <!DOCTYPE html>
-<html lang="ru" class="current-html">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Текущие угрозы</title>
+    <meta charset='utf-8'>
     {% load static %}
-    <link rel="stylesheet" href="{% static 'styles.css' %}">
+    <link rel="stylesheet" href="{% static 'styles.css' %}"/>
+    <title>Заявка</title>
 </head>
-<body class="request-body">
-    <div class="request-container">
-        <a href="{% url 'threats_list' %}" class="back-button">Назад</a>
+<body>
+    <div class="site-header">
+        <a href="/"><div class="site-name">Мониторинг угроз</div></a>
+    </div>
+    <div class="site-body">
         <table class="data-table">
             <thead>
                 <tr>
-                    <th>Тип события</th>
-                    <th>Дата</th>
+                    <th>Тип угрозы</th>
+                    <th>Описание</th>
                     <th>Статус</th>
                 </tr>
             </thead>
             <tbody>
                 {% for threat in current_threats %}
                 <tr>
-                    <td>{{ threat.type }}</td>
-                    <td>{{ threat.date }}</td>
-                    <td>{{ threat.status }}</td>
+                    <td>asd</td>
+                    <td>qweqwe</td>
+                    <td>10</td>
                 </tr>
                 {% endfor %}
             </tbody>
