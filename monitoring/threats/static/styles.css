@@ -62,7 +62,6 @@ a:link {
 }
 
 /* взято частично из https://vuejs.org/partners/ */
-@import"https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap";
 .card {
     background-color: #1a1a1a;
     padding: 24px 30px;
@@ -98,7 +97,7 @@ a {
 
 .card__image {
     flex-basis: 50%;
-    height: 100%;
+    width:360px;
     margin-top: 5%;
 }
 
@@ -153,6 +152,7 @@ a {
 }
 
 .card__statistics__header {
+    margin-top: 4%;
     font-size: 1.5em;
     font-weight: bold;
 }
@@ -170,6 +170,16 @@ a {
     flex-direction: column;
     font-size: 15px;
     height: auto;
+    align-items: center; /* Центрирует элементы по горизонтали */
+    justify-content: center; /* Центрирует элементы по вертикали */
+    text-align: center; /* Центрирует текст внутри элементов */
+}
+
+
+.card__image__description {
+    flex-basis: 50%;
+    max-width:720px;
+    margin-top: 2%;
 }
 
 

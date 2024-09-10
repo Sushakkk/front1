@@ -17,6 +17,7 @@
                     <th>Тип угрозы</th>
                     <th>Описание</th>
                     <th>Цена</th>
+                    <th>Обнаружений</th>
                     <th>Статус</th>
                 </tr>
             </thead>
@@ -26,6 +27,7 @@
                     <td>{{ threat.name }}</td>
                     <td>{{ threat.short_description }}</td>
                     <td>{{ threat.price }}</td>
+                    <td> {{ threat.count }}</td>
                     <td>{{ threat.status }}</td>
                 </tr>
                 {% endfor %}
