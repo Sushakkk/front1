@@ -22,5 +22,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.threats_list, name='threats_list'),
     path('threat/<int:id>/', views.threat_description, name='threat_description'),
-    path('current/', views.threat_request, name='threat_request'),
+    path('current/<int:id>/', views.threat_request, name='threat_request'),
 ]

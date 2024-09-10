@@ -11,7 +11,7 @@ THREATS = [
     {'id': 6, 'name': 'Эксплуатация уязвимостей web-приложений', 'short_description': 'Мониторинг эксплуатации уязвимостей web-приложений', 'img_url':'http://127.0.0.1:9000/static/web.jpg','description':'Для проникновения внутрь компании хакеры зачастую используют уязвимости в web-приложений. Наши специалисты успешно детектируют и митигируют попытки эксплуатации таких уязвимостей', 'count':7,'price':13200},
 ]
 # TODO
-REQUESTS = [{'threat_id':4},{'threat_id':2},{'threat_id':6}]
+REQUESTS = [{'request_id':1,'threats':[4,2,6]}]
 
 
 
@@ -22,13 +22,17 @@ def get_name_by_id(threats, search_id):
     return None
 
 def threats_list(request):
+
+    for req in REQUESTS:
+        threat_count = len(req['threats'])
+
     threats = []
     if 'threat_name' in request.GET:
         for threat in THREATS:
             if request.GET['threat_name'].lower() in threat["name"].lower():
                 threats.append(threat)
-        return render(request, 'index.html', {'threats': threats, 'input_value':request.GET['threat_name'], 'current_count':1})
-    return render(request, 'index.html', {'threats': THREATS, 'current_count':len(REQUESTS)})
+        return render(request, 'index.html', {'threats': threats, 'input_value':request.GET['threat_name'],'current_count':threat_count,'request_id':REQUESTS[0]['request_id']})
+    return render(request, 'index.html', {'threats': THREATS, 'current_count':threat_count,'request_id':REQUESTS[0]['request_id']})
 
 def threat_description(request, id):
     for threat in THREATS:
@@ -36,10 +40,17 @@ def threat_description(request, id):
             data = threat
     return render(request, 'description.html', {'threat': data})
 
-def threat_request(request):
+def threat_request(request, id):
 
-    threat_ids = [request['threat_id'] for request in REQUESTS]
-    filtered_threats = [threat for threat in THREATS if threat['id'] in threat_ids]
-    for threat in filtered_threats:
-        threat["status"] = "Активно"
-    return render(request, 'request.html', {'current_threats':filtered_threats})
+    result = []
+
+    for req in REQUESTS:
+        matched_threats = []
+        for threat_id in req['threats']:
+            threat = next((t for t in THREATS if t['id'] == threat_id), None)
+            if threat:
+                threat_with_status = threat.copy() 
+                threat_with_status['status'] = 'Активно'
+                matched_threats.append(threat_with_status)
+
+    return render(request, 'request.html', {'current_threats':matched_threats})
