@@ -11,7 +11,7 @@ THREATS = [
     {'id': 6, 'name': 'Эксплуатация уязвимостей web-приложений', 'short_description': 'Мониторинг эксплуатации уязвимостей web-приложений', 'img_url':'http://127.0.0.1:9000/static/web.jpg','description':'Для проникновения внутрь компании хакеры зачастую используют уязвимости в web-приложений. Наши специалисты успешно детектируют и митигируют попытки эксплуатации таких уязвимостей', 'count':7,'price':13200},
 ]
 # TODO
-REQUESTS = [{'request_id':1,'threats':[{'threat_name':'Запуск вредоносного ПО','company_name':'Kaspersky', 'short_description':'Мониторинг запуска вредоносного ПО','price':'10000', 'img_url':'http://127.0.0.1:9000/static/virus.jpg'},{'threat_name':'Запуск вредоносного ПО','company_name':'Kaspersky', 'short_description':'Мониторинг запуска вредоносного ПО','price':'10000', 'img_url':'http://127.0.0.1:9000/static/virus.jpg'}]}]
+REQUESTS = [{'request_id':1,'threats':[{'threat_name':'Запуск вредоносного ПО','company_name':'Kaspersky', 'short_description':'Мониторинг запуска вредоносного ПО','price':'10000', 'img_url':'http://127.0.0.1:9000/static/virus.jpg'},{'threat_name':'Эксплуатация уязвимостей web-приложений','company_name':'Kaspersky', 'short_description':'Мониторинг эксплуатации уязвимостей web-приложений','price':'14000', 'img_url':'http://127.0.0.1:9000/static/web.jpg'}]}]
 
 
 
