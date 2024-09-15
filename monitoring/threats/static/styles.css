@@ -24,15 +24,15 @@ a:link {
 .current-request {
     position: relative;
     font-size: 1.25em;
-    margin-left: auto; /* Перемещает элемент к правой стороне */
+    margin-left: auto;
     text-align: right;
     top: -35px;
     left: 15%;
 }
 
 .search-form {
-    display: flex; /* Помещает input и кнопку в одну строку */
-    gap: 10px; /* Пространство между полем ввода и кнопкой */
+    display: flex;
+    gap: 10px;
     width: 100%;
 }
 
@@ -42,8 +42,8 @@ a:link {
 
 .site-header {
     display: flex;
-    justify-content: space-between; /* Распределяет элементы по горизонтали с равными промежутками */
-    align-items: center; /* Выравнивает элементы по вертикали по центру */
+    justify-content: space-between;
+    align-items: center;
     width: auto;
     background-color: #333;
     padding: 10px 20px;
@@ -57,10 +57,10 @@ a:link {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
 
-    row-gap: 40px; /*асстояние между карточками по вертикали*/
-    column-gap: 100px; /*расстояние между карточками по горизонтали*/
+    row-gap: 40px;
+    column-gap: 100px;
 
-    align-items: stretch; /* Растягивает карточки по высоте */
+    align-items: stretch;
     margin-left: 8%;
 }
 
@@ -187,9 +187,9 @@ a {
     flex-direction: column;
     font-size: 15px;
     height: auto;
-    align-items: center; /* Центрирует элементы по горизонтали */
-    justify-content: center; /* Центрирует элементы по вертикали */
-    text-align: center; /* Центрирует текст внутри элементов */
+    align-items: center;
+    justify-content: center; 
+    text-align: center; 
 }
 
 
@@ -234,7 +234,7 @@ a {
 
 .data-table .status {
     font-weight: bold;
-    color: #00A88E; /* Пример цвета для статуса */
+    color: #00A88E;
 }
 
 
@@ -266,8 +266,8 @@ a {
 
 .company_name, .monitoring_cost {
     position: relative;
-    top: 60px;  /* Сдвиг вниз */
-    right: -37%; /* Сдвиг вправо */
+    top: 60px;  
+    right: -37%;
     font-size: 1.25em;
     margin-top: 10px;
 }
