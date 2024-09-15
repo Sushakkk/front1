@@ -22,8 +22,18 @@ a:link {
 }
 
 .current-request {
+    position: relative;
     font-size: 1.25em;
-    margin-left: -30%;
+    margin-left: auto; /* Перемещает элемент к правой стороне */
+    text-align: right;
+    top: -35px;
+    left: 15%;
+}
+
+.search-form {
+    display: flex; /* Помещает input и кнопку в одну строку */
+    gap: 10px; /* Пространство между полем ввода и кнопкой */
+    width: 90%;
 }
 
 .current-request:hover {
@@ -117,8 +127,15 @@ a {
     align-items: center;
 }
 
+.search {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 100%;
+}
+
 .search-bar {
-    width: 80%;
+    width: 70%;
     height: 32px;
     background-color: rgb(46, 44, 44);
     padding: 3px;

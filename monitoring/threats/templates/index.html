@@ -9,21 +9,20 @@
 <body>
 <div class="site-header">
     <a href="/"><div class="site-name">Мониторинг угроз</div></a>
-    <a href="/current/{{ request_id }}"><div class="current-request">Текущая заявка ({{ current_count }})</div></a>
 </div>
 <div class="site-body">
     <div class="search">
-        <form action="/" method="GET">
+        <form action="/" method="GET" class="search-form">
             <input type="text" name="threat_name" value="{{ input_value }}" class="search-bar">
             <input type="submit" value="Поиск" class="search-button">
-        </form>
-        
+        </form>      
+        <a href="/current/{{ request_id }}"><div class="current-request">Текущая заявка ({{ current_count }})</div></a>
     </div>
     <div class="cards-list">
             {% for threat in threats %}
             <a href="/threat/{{ threat.id }}">
                 <div class="card">
-                    <div class="card__content">
+                    <div class="card__content card__content-request">
                         <h3 class="card__name">{{ threat.name }} </h3>
                         <div class="card_description"> {{ threat.short_description }}</div>
                     </div>
