@@ -33,7 +33,7 @@ a:link {
 .search-form {
     display: flex; /* Помещает input и кнопку в одну строку */
     gap: 10px; /* Пространство между полем ввода и кнопкой */
-    width: 90%;
+    width: 100%;
 }
 
 .current-request:hover {
