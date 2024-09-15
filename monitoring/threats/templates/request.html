@@ -10,24 +10,35 @@
     <div class="site-header">
         <a href="/"><div class="site-name">Мониторинг угроз</div></a>
     </div>
+    <div class="request-buttons">
+        <form action="{% url 'del_request' %}" method="POST">
+            {% csrf_token %}
+            <input type="hidden" value="{{ req_id }}" name="request_id">
+            <button type="submit" class="del-button">Удалить</button>
+        </form>
+    </div>
     <div class="site-body">
 
         <div class="cards-list-request">
-            {% for threat in current_threats.threats %}
-                <div class="card card-request">
-                    <div class="card__content">
-                        <h3 class="card__name card__name-request">{{ threat.threat_name }} </h3>
-                        <div class="card_description card_description-request"> {{ threat.short_description }}</div>
-                        <div class="company_name">
-                            <strong>Компания:</strong> {{ threat.company_name }}
+            {% if current_threats %}
+                {% for threat in current_threats %}
+                    <div class="card card-request">
+                        <div class="card__content">
+                            <h3 class="card__name card__name-request">{{ threat.threat_name }} </h3>
+                            <div class="card_description card_description-request"> {{ threat.short_description }}</div>
+                            <div class="company_name">
+                                <strong>Компания:</strong> {{ threat.company_name }}
+                            </div>
+                            <div class="monitoring_cost">
+                                <strong>Стоимость мониторинга:</strong> {{ threat.price }} ₽
+                            </div>
                         </div>
-                        <div class="monitoring_cost">
-                            <strong>Стоимость мониторинга:</strong> {{ threat.price }} ₽
-                        </div>
+                        <img src="{{ threat.img_url }}" class="card__image card__image-request" alt="{{ threat.threat_name }}">
                     </div>
-                    <image src="{{ threat.img_url }}" class="card__image card__image-request"></image>
-                </div>
-            {% endfor %}
+                {% endfor %}
+            {% else %}
+                <p>Корзина пуста</p>
+            {% endif %}
         </div>
     </div>
 </body>

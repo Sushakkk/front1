@@ -23,4 +23,6 @@ urlpatterns = [
     path('', views.threats_list, name='threats_list'),
     path('threat/<int:id>/', views.threat_description, name='threat_description'),
     path('current/<int:id>/', views.threat_request, name='threat_request'),
+    path('add-threat/', views.add_threat, name='add_threat'),
+    path('del-threat/', views.del_request, name='del_request'),
 ]

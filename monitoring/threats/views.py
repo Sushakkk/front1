@@ -1,5 +1,8 @@
 from django.shortcuts import render
-import datetime
+from django.shortcuts import redirect
+from django.db import connection
+from .models import Threat, Request, RequestThreat
+
 
 # Create your views here.
 THREATS = [
@@ -21,25 +24,81 @@ def get_name_by_id(threats, search_id):
             return threat['name']
     return None
 
+
 def threats_list(request):
+    
 
-    for req in REQUESTS:
-        threat_count = len(req['threats'])
+    # проверяем наличие заявки в статусе draft
+    if not Request.objects.filter(status='draft').exists():
+        req = Request()
+        req.save()
 
-    threats = []
-    if 'threat_name' in request.GET:
-        for threat in THREATS:
-            if request.GET['threat_name'].lower() in threat["name"].lower():
-                threats.append(threat)
-        return render(request, 'index.html', {'threats': threats, 'input_value':request.GET['threat_name'],'current_count':threat_count,'request_id':REQUESTS[0]['request_id']})
-    return render(request, 'index.html', {'threats': THREATS, 'current_count':threat_count,'request_id':REQUESTS[0]['request_id']})
+    requests = Request.objects.filter(status='draft')
+    current_request = requests.first()
+    threat_count = current_request.request_threats.count()
+    
+    threat_name = request.GET.get('threat_name', '').strip().lower()
+    if threat_name:
+        threats = Threat.objects.filter(threat_name__icontains=threat_name)
+    else:
+        threats = Threat.objects.all()
+
+    
+    
+    # Передаем данные в шаблон
+    context = {
+        'threats': threats,
+        'input_value': threat_name,
+        'current_count': threat_count,
+        'request_id': current_request.id if current_request else req.id
+    }
+    
+    return render(request, 'index.html', context)
+
+
 
 def threat_description(request, id):
-    for threat in THREATS:
-        if threat["id"] == id:
-            data = threat
-    return render(request, 'description.html', {'threat': data})
+
+    threat = Threat.objects.get(id=id)
+    return render(request, 'description.html', {'threat': threat})
+
+
 
 def threat_request(request, id):
-    current_request = REQUESTS[0]
-    return render(request, 'request.html', {'current_threats':current_request})
+    req_id = id
+    current_request = Request.objects.get(id=id)
+    threat_ids = RequestThreat.objects.filter(request=current_request).values_list('threat_id', flat=True)
+    current_threats = Threat.objects.filter(id__in=threat_ids)
+    
+    # Передаем данные в шаблон
+    context = {
+        'current_threats': current_threats,
+        'current_request': current_request,
+        'req_id':req_id
+    }
+    
+    return render(request, 'request.html', context)
+
+
+def add_threat(request):
+    if request.method == 'POST':
+        threat_id = request.POST.get('threat_id')
+        threat = Threat.objects.get(id=threat_id)
+        req = Request.objects.get(status='draft')
+        if RequestThreat.objects.filter(request=req, threat=threat).exists():
+            return redirect('/')
+        request_threat = RequestThreat(request=req, threat=threat)
+        request_threat.save()
+        return redirect('/')
+    else:
+        return redirect('/')
+    
+
+def del_request(request):
+    if request.method == 'POST':
+        request_id = request.POST.get('request_id')
+        with connection.cursor() as cursor:
+            cursor.execute("UPDATE requests SET status = %s WHERE id = %s", ['deleted', request_id])
+        return redirect('/')
+    else:
+        return redirect('/')
