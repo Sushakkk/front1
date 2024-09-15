@@ -11,28 +11,24 @@
         <a href="/"><div class="site-name">Мониторинг угроз</div></a>
     </div>
     <div class="site-body">
-        <table class="data-table">
-            <thead>
-                <tr>
-                    <th>Тип угрозы</th>
-                    <th>Описание</th>
-                    <th>Цена</th>
-                    <th>Обнаружений</th>
-                    <th>Статус</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for threat in current_threats %}
-                <tr>
-                    <td>{{ threat.name }}</td>
-                    <td>{{ threat.short_description }}</td>
-                    <td>{{ threat.price }}</td>
-                    <td> {{ threat.count }}</td>
-                    <td>{{ threat.status }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+
+        <div class="cards-list-request">
+            {% for threat in current_threats.threats %}
+                <div class="card card-request">
+                    <div class="card__content">
+                        <h3 class="card__name card__name-request">{{ threat.threat_name }} </h3>
+                        <div class="card_description card_description-request"> {{ threat.short_description }}</div>
+                        <div class="company_name">
+                            <strong>Компания:</strong> {{ threat.company_name }}
+                        </div>
+                        <div class="monitoring_cost">
+                            <strong>Стоимость мониторинга:</strong> {{ threat.price }} ₽
+                        </div>
+                    </div>
+                    <image src="{{ threat.img_url }}" class="card__image card__image-request"></image>
+                </div>
+            {% endfor %}
+        </div>
     </div>
 </body>
 </html>

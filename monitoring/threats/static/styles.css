@@ -219,3 +219,38 @@ a {
     font-weight: bold;
     color: #00A88E; /* Пример цвета для статуса */
 }
+
+
+.cards-list-request {
+    margin-top: 20px;
+}
+
+.card-request {
+    margin-top: 20px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    max-height: 460px;
+    width: auto;
+}
+
+.card__name-request {
+    text-align: center;
+}
+
+.card__image-request {
+    width: 400px;
+    position: relative;
+    top: -100px;
+}
+
+.card_description-request {
+    text-align: center;
+}
+
+.company_name, .monitoring_cost {
+    position: relative;
+    top: 60px;  /* Сдвиг вниз */
+    right: -37%; /* Сдвиг вправо */
+    font-size: 1.25em;
+    margin-top: 10px;
+}
