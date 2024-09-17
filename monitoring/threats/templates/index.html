@@ -16,7 +16,7 @@
             <input type="text" name="threat_name" value="{{ input_value }}" class="search-bar">
             <input type="submit" value="Поиск" class="search-button">
         </form>      
-        <a href="/current/{{ request_id }}"><div class="current-request">Текущая заявка ({{ current_count }})</div></a>
+        <a href="/current/{{ request_id }}" class="current-request">Текущая заявка ({{ current_count }})</a>
     </div>
     <div class="cards-list">
             {% for threat in threats %}
