@@ -21,22 +21,6 @@ a:link {
     color: #00A88E;
 }
 
-.current-request {
-    position: relative;
-    font-size: 1.25em;
-    margin-left: 10px; /* Отступ слева, чтобы отделить от кнопки "Поиск" */
-    left: 13%;
-    text-align: right;
-    white-space: nowrap; /* Запрещает перенос текста на новую строку */
-}
-
-.search-form {
-    display: flex;
-    gap: 10px;
-    flex-grow: 1;
-    width: 120%;
-}
-
 
 .current-request:hover {
     color: #00A88E;
@@ -128,6 +112,23 @@ a {
 
     align-items: center;
 }
+
+.current-request {
+    position: relative;
+    font-size: 1.25em;
+    margin-left: 10px; /* Отступ слева, чтобы отделить от кнопки "Поиск" */
+    left: 13%;
+    text-align: right;
+    white-space: nowrap; /* Запрещает перенос текста на новую строку */
+}
+
+.search-form {
+    display: flex;
+    gap: 10px;
+    flex-grow: 1;
+    width: 120%;
+}
+
 
 .search-button {
     width: 200px; /* Фиксированная ширина кнопки поиска */
