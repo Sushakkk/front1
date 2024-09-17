@@ -21,21 +21,6 @@ a:link {
     color: #00A88E;
 }
 
-.current-request {
-    position: relative;
-    font-size: 1.25em;
-    margin-left: auto;
-    text-align: right;
-    top: -35px;
-    left: 15%;
-}
-
-.search-form {
-    display: flex;
-    gap: 10px;
-    width: 100%;
-}
-
 .current-request:hover {
     color: #00A88E;
 }
@@ -127,25 +112,25 @@ a {
     align-items: center;
 }
 
-.search {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    width: 100%;
+.current-request {
+    position: relative;
+    font-size: 1.25em;
+    margin-left: 10px; /* Отступ слева, чтобы отделить от кнопки "Поиск" */
+    left: 13%;
+    text-align: right;
+    white-space: nowrap; /* Запрещает перенос текста на новую строку */
 }
 
-.search-bar {
-    width: 70%;
-    height: 32px;
-    background-color: rgb(46, 44, 44);
-    padding: 3px;
-    border: 0;
-    border-radius: 3px;
-    color: white;
+.search-form {
+    display: flex;
+    gap: 10px;
+    flex-grow: 1;
+    width: 120%;
 }
+
 
 .search-button {
-    width: 18.5%;
+    width: 200px; /* Фиксированная ширина кнопки поиска */
     font-size: 1em;
     height: 38px;
     padding: 3px;
@@ -153,6 +138,25 @@ a {
     color: white;
     border: 0;
     border-radius: 3px;
+    white-space: nowrap;
+}
+
+.search {
+    display: flex;
+    justify-content: space-between; /* Разместим элементы на максимальном расстоянии друг от друга */
+    align-items: center; /* Выравнивание по вертикали */
+    width: 100%;
+    margin-bottom: 20px; /* Отступ снизу */
+}
+
+.search-bar {
+    flex-grow: 1; /* Поле поиска займет оставшееся пространство */
+    height: 32px;
+    background-color: rgb(46, 44, 44);
+    padding: 3px;
+    border: 0;
+    border-radius: 3px;
+    color: white;
 }
 
 .search-button:hover {
