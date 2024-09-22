@@ -1,0 +1,88 @@
+from .models import Threat, Request, RequestThreat
+from rest_framework import serializers
+from django.contrib.auth.models import User
+from django.contrib.auth import authenticate
+
+
+class RequestSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Request
+        fields = ["pk","status","created_at","formed_at","ended_at","user","moderator","final_price"]
+        
+
+class ThreatDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Threat
+        fields = ["pk","threat_name","company_name","short_description","description","status","img_url","price","detections"]
+
+class ThreatListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Threat
+        fields = ["pk","threat_name","short_description","status","img_url"]
+
+class ImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Threat
+        fields = ["pk","img_url"]
+
+
+class RequestThreatSerializer(serializers.Serializer):
+    threat_id = serializers.IntegerField(required=True)
+    comment = serializers.CharField(required=False)
+
+    def validate(self, data):
+        threat_id = data.get('threat_id')
+
+        # Дополнительная логика валидации, например проверка на существование этих id в базе данных
+        if not Threat.objects.filter(pk=threat_id).exists():
+            raise serializers.ValidationError(f"threat_id is incorrect")
+
+        return data
+    
+
+
+
+
+# AUTH SERIALIZERS
+
+class UserRegistrationSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True)
+
+    class Meta:
+        model = User
+        fields = ('username', 'email', 'password')
+
+    def create(self, validated_data):
+        user = User.objects.create_user(
+            username=validated_data['username'],
+            email=validated_data['email'],
+            password=validated_data['password']
+        )
+        return user
+
+
+class UserUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('username', 'email', 'first_name', 'last_name')
+
+
+class AuthTokenSerializer(serializers.Serializer):
+    username = serializers.CharField()
+    password = serializers.CharField(write_only=True)
+
+    def validate(self, data):
+        user = authenticate(username=data['username'], password=data['password'])
+        if user is None:
+            raise serializers.ValidationError("Неверные учетные данные")
+        return {'user': user}
+    
+
+class CheckUsernameSerializer(serializers.Serializer):
+    username = serializers.CharField()
+
+    def validate(self, data):
+        if not User.objects.filter(username=data['username']).exists():
+            raise serializers.ValidationError("Пользователь не существует")
+        
+        return data
