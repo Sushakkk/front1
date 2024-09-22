@@ -1,5 +1,6 @@
 from django.db import models
 from datetime import datetime 
+from django.contrib.auth.models import User
 
 class Threat(models.Model):
     threat_name = models.CharField(max_length=60, null=False)
@@ -20,7 +21,7 @@ class Request(models.Model):
     created_at = models.DateTimeField(null=False, default=datetime.now())
     formed_at = models.DateTimeField(null=True)
     ended_at = models.DateTimeField(null=True)
-    creator = models.CharField(max_length=50, null=False,default='lexcf')
+    user = models.ForeignKey(User,on_delete=models.CASCADE)
     moderator = models.CharField(max_length=50,null=True)
     final_price = models.IntegerField(null=True)
 
@@ -31,6 +32,7 @@ class Request(models.Model):
 class RequestThreat(models.Model):
     request = models.ForeignKey(Request, on_delete=models.CASCADE, related_name='request_threats')
     threat = models.ForeignKey(Threat, on_delete=models.CASCADE)
+    comment = models.TextField(null=True)    
 
     class Meta:
         managed = True
