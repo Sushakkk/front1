@@ -8,8 +8,12 @@ class RequestSerializer(serializers.ModelSerializer):
     class Meta:
         model = Request
         fields = ["pk","status","created_at","formed_at","ended_at","user","moderator","final_price"]
-        
 
+class PutRequestSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Request
+        fields = ["status","created_at","formed_at","ended_at","user","moderator","final_price"]
+        
 class ThreatDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Threat
@@ -86,3 +90,6 @@ class CheckUsernameSerializer(serializers.Serializer):
             raise serializers.ValidationError("Пользователь не существует")
         
         return data
+    
+class AcceptRequestSerializer(serializers.Serializer):
+    accept = serializers.BooleanField()

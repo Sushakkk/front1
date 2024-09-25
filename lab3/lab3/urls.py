@@ -30,6 +30,15 @@ urlpatterns = [
 
     #requests domain
     path(r'list-requests/',views.ListRequests.as_view(),name='list-requests-by-username'),
+    path(r'requests/<int:pk>/',views.GetRequests.as_view(),name='get-request-by-id'),
+    path(r'requests/<int:pk>/',views.GetRequests.as_view(),name='put-request-by-id'),
+    
+    path(r'form-request/<int:pk>/',views.FormRequests.as_view(),name='form-request-by-id'),
+    path(r'moderate-request/<int:pk>/',views.ModerateRequests.as_view(),name='moderate-request-by-id'),
+
+    #m-m
+    path(r'delete-from-request/<int:pk>/',views.EditRequestThreat.as_view(),name='delete-from-request-by-id'),
+    path(r'add-price/<int:pk>/',views.EditRequestThreat.as_view(),name='add-price-request-by-id'),
 
     # user domain
     path('register/', views.UserRegistrationView.as_view(), name='register'),

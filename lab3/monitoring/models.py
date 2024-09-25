@@ -22,7 +22,7 @@ class Request(models.Model):
     formed_at = models.DateTimeField(null=True)
     ended_at = models.DateTimeField(null=True)
     user = models.ForeignKey(User,on_delete=models.CASCADE, null=True)
-    moderator = models.CharField(max_length=50,null=True)
+    moderator = models.ForeignKey(User,on_delete=models.CASCADE, null=True,related_name='moderator')
     final_price = models.IntegerField(null=True)
 
     class Meta:
@@ -32,7 +32,7 @@ class Request(models.Model):
 class RequestThreat(models.Model):
     request = models.ForeignKey(Request, on_delete=models.CASCADE, related_name='request_threats')
     threat = models.ForeignKey(Threat, on_delete=models.CASCADE)
-    comment = models.TextField(null=True)    
+    price = models.BigIntegerField(null=True)
 
     class Meta:
         managed = True

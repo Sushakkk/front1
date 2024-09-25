@@ -8,6 +8,7 @@ from rest_framework.decorators import api_view
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import logout
+from datetime import datetime 
 
 
 class ThreatList(APIView):
@@ -83,8 +84,8 @@ class AddThreatView(APIView):
             new_req_threat = RequestThreat()
             new_req_threat.threat_id = serializer.validated_data["threat_id"]
             new_req_threat.request_id = request_id
-            if 'comment' in request.data:
-                new_req_threat.comment = request.data["comment"]
+            if 'price' in request.data:
+                new_req_threat.price = request.data["price"]
             new_req_threat.save()
             return Response(status=status.HTTP_200_OK)
         else:
@@ -161,3 +162,115 @@ class ListRequests(APIView):
             return Response(req_serializer.data,status=status.HTTP_200_OK)
         else:
             return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+
+class GetRequests(APIView):
+    
+    def get(self, request, pk):
+        req = get_object_or_404(Request, pk=pk)
+        serializer = RequestSerializer(req)
+
+        threat_requests = RequestThreat.objects.filter(request=req)
+        threats_ids = []
+        for threat_request in threat_requests:
+            threats_ids.append(threat_request.threat_id)
+
+        threats_in_request = []
+        for id in threats_ids:
+            threats_in_request.append(get_object_or_404(Threat,pk=id))
+
+        threats_serializer = ThreatListSerializer(threats_in_request,many=True)
+        response = serializer.data
+        response['threats'] = threats_serializer.data
+
+        return Response(response,status=status.HTTP_200_OK)
+    
+    def put(self, request, pk):
+        serializer = PutRequestSerializer(data=request.data)
+        if serializer.is_valid():
+            req = get_object_or_404(Request, pk=pk)
+            for attr, value in serializer.validated_data.items():
+                setattr(req, attr, value)
+            req.save()
+            return Response(status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+class FormRequests(APIView):
+    def put(self, request, pk):
+        req = get_object_or_404(Request, pk=pk)
+        if not req.status=='draft':
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        if not request.user == req.user:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+        
+        if req.created_at > datetime.now():
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        if not req.ended_at == None:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        
+        req.formed_at = datetime.now()
+        req.status = 'formed'
+        req.save()
+        return Response(status=status.HTTP_200_OK)
+    
+
+class ModerateRequests(APIView):
+    def put(self,request,pk):
+
+        if not request.user.is_staff:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
+        req = get_object_or_404(Request, pk=pk)
+        serializer = AcceptRequestSerializer(data=request.data)
+        if serializer.is_valid():
+            if serializer.validated_data['accept'] == True:
+                req.status = 'accepted'
+                req.moderator = request.user
+
+                # calc final price
+                threat_requests = RequestThreat.objects.filter(request=req)
+
+                final_price = 0
+
+                for threat_request in threat_requests:
+                    final_price = final_price + threat_request.price
+
+                req.final_price = final_price
+            else:
+                req.status = 'declined'
+                req.moderator = request.user 
+                req.ended_at = datetime.now()
+            req.save()
+            return Response(status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+        
+
+    def delete(self, request, pk):
+        if not request.user.is_staff:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+        req = get_object_or_404(Request, pk=pk)
+        req.status = 'deleted'
+        req.save()
+        return Response(status=status.HTTP_200_OK)
+    
+
+class EditRequestThreat(APIView):
+    def delete(self, request, pk):
+        if 'threat_id' in request.data:
+            record = get_object_or_404(RequestThreat, request=pk,threat=request.data['threat_id'])
+            record.delete()
+            return Response(status=status.HTTP_200_OK)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        
+    def put(self,request,pk):
+        if not request.user.is_staff:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+        if 'threat_id' in request.data and 'price' in request.data:
+            record = get_object_or_404(RequestThreat, request=pk,threat=request.data['threat_id'])
+            record.price = request.data['price']
+            record.save()
+            return Response(status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
