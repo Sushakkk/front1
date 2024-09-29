@@ -247,6 +247,8 @@ a {
 }
 
 .card-request {
+    display: flex;
+    
     margin-top: 20px;
     padding-top: 0px;
     padding-bottom: 0px;
@@ -268,12 +270,57 @@ a {
     text-align: center;
 }
 
-.company_name, .monitoring_cost {
+.company_name, .monitoring_cost, .comment {
     position: relative;
     top: 60px;  
     right: -37%;
     font-size: 1.25em;
     margin-top: 10px;
+}
+
+.request-table {
+    position: relative;
+    width: 65%;
+    margin-left: 35%;
+    top: 50px;
+    border-collapse: collapse;
+    table-layout: fixed; /* Устанавливаем фиксированное распределение ширины */
+}
+
+.request-table th, .request-table td {
+    border: 1px solid #444343;
+    padding: 8px;
+    overflow: hidden; /* Скрываем переполнение текста */
+    text-overflow: ellipsis; /* Добавляем многоточие для длинного текста */
+    text-align: center; /* Выравнивание содержимого вправо */
+    overflow-wrap: break-word; /* Автоматический перенос слов */
+    word-wrap: break-word; /* Поддержка старых браузеров */
+    white-space: normal; /* Позволяет перенос строк */
+}
+
+.request-table th {
+    background-color: #00A88E;
+}
+
+/* Устанавливаем фиксированную ширину для всех столбцов */
+.request-table th:nth-child(1),
+.request-table td:nth-child(1) {
+    width: 25%; /* Ширина для столбца "Компания" */
+}
+
+.request-table th:nth-child(2),
+.request-table td:nth-child(2) {
+    width: 25%; /* Ширина для столбца "Угроза" */
+}
+
+.request-table th:nth-child(3),
+.request-table td:nth-child(3) {
+    width: 25%; /* Ширина для столбца "Стоимость мониторинга" */
+}
+
+.request-table th:nth-child(4),
+.request-table td:nth-child(4) {
+    width: 25%; /* Ширина для столбца "Комментарий" */
 }
 
 .buttons {

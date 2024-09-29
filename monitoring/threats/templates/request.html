@@ -26,12 +26,24 @@
                         <div class="card__content">
                             <h3 class="card__name card__name-request">{{ threat.threat_name }} </h3>
                             <div class="card_description card_description-request"> {{ threat.short_description }}</div>
-                            <div class="company_name">
-                                <strong>Компания:</strong> {{ threat.company_name }}
-                            </div>
-                            <div class="monitoring_cost">
-                                <strong>Стоимость мониторинга:</strong> {{ threat.price }} ₽
-                            </div>
+                            <table class="request-table">
+                                <thead>
+                                    <tr>
+                                        <th>Компания</th>
+                                        <th>Стоимость мониторинга</th>
+                                        <th>Комментарий</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for threat in current_threats %}
+                                        <tr>
+                                            <td>{{ threat.company_name }}</td>
+                                            <td>{{ threat.price }} ₽</td>
+                                            <td>{{ threat.comment }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
                         </div>
                         <img src="{{ threat.img_url }}" class="card__image card__image-request" alt="{{ threat.threat_name }}">
                     </div>

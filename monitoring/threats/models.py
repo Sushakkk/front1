@@ -21,8 +21,8 @@ class Request(models.Model):
     created_at = models.DateTimeField(null=False, default=datetime.now())
     formed_at = models.DateTimeField(null=True)
     ended_at = models.DateTimeField(null=True)
-    user = models.ForeignKey(User,on_delete=models.CASCADE)
-    moderator = models.CharField(max_length=50,null=True)
+    user = models.ForeignKey(User,on_delete=models.CASCADE,default=1)
+    moderator = models.ForeignKey(User,null=True,related_name='moderator_id',on_delete=models.CASCADE)
     final_price = models.IntegerField(null=True)
 
     class Meta:

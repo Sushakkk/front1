@@ -55,7 +55,14 @@ def threat_request(request, id):
     req_id = id
     current_request = Request.objects.get(id=id)
     threat_ids = RequestThreat.objects.filter(request=current_request).values_list('threat_id', flat=True)
-    current_threats = Threat.objects.filter(id__in=threat_ids)
+     # Получаем все угрозы и их комментарии
+    request_threats = RequestThreat.objects.filter(request=current_request)
+    current_threats = Threat.objects.filter(id__in=request_threats.values_list('threat_id', flat=True))
+
+    # Добавляем комментарии к объектам Threat
+    for threat in current_threats:
+        threat.comment = request_threats.get(threat=threat).comment  # Получаем комментарий для угрозы
+
     
     # Передаем данные в шаблон
     context = {
@@ -70,10 +77,14 @@ def threat_request(request, id):
 def add_threat(request):
     if request.method == 'POST':
 
+
+
         if not Request.objects.filter(status='draft').exists():
             req = Request()
-            req.user_id = request.user.id
+            req.user_id = 1
             req.save()
+        else:
+            req = Request.objects.get(status='draft')
 
         threat_id = request.POST.get('threat_id')
         threat = Threat.objects.get(id=threat_id)
