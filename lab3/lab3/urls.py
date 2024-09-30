@@ -26,7 +26,7 @@ urlpatterns = [
     path(r'threats/delete/<int:pk>/', views.ThreatDetail.as_view(), name='threats-delete'), 
     path(r'threats/<int:pk>/', views.ThreatDetail.as_view(), name='threat-detail'),             # детальное описание угрозы (GET), изменение (PUT), удаление (DELETE)
     path(r'threats/add/', views.AddThreatView.as_view(), name='add-threat-to-request'), # добавление в заявку для пользователя
-    path(r'threats/image/', views.ImageView.as_view(), name='request-put'),             # добавление услуги в заявку
+    path(r'threats/image/', views.ImageView.as_view(), name='add-image'),             # замена изображения
 
     #requests domain
     path(r'list-requests/',views.ListRequests.as_view(),name='list-requests-by-username'),
@@ -35,6 +35,7 @@ urlpatterns = [
     
     path(r'form-request/<int:pk>/',views.FormRequests.as_view(),name='form-request-by-id'),
     path(r'moderate-request/<int:pk>/',views.ModerateRequests.as_view(),name='moderate-request-by-id'),
+    path(r'delete-request/<int:pk>/',views.ModerateRequests.as_view(),name='delete-request-by-id'),
 
     #m-m
     path(r'delete-from-request/<int:pk>/',views.EditRequestThreat.as_view(),name='delete-from-request-by-id'),

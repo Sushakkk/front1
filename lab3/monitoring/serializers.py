@@ -4,6 +4,19 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 
 
+class AddImageSerializer(serializers.Serializer):
+    threat_id = serializers.IntegerField(required=True)
+    img_url = serializers.CharField(required=True)
+
+    def validate(self, data):
+        threat_id = data.get('threat_id')
+
+        # Дополнительная логика валидации, например проверка на существование этих id в базе данных
+        if not Threat.objects.filter(pk=threat_id).exists():
+            raise serializers.ValidationError(f"threat_id is incorrect")
+        
+        return data
+
 class RequestSerializer(serializers.ModelSerializer):
     class Meta:
         model = Request
@@ -22,7 +35,7 @@ class ThreatDetailSerializer(serializers.ModelSerializer):
 class ThreatListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Threat
-        fields = ["pk","threat_name","short_description","status","img_url"]
+        fields = ["pk","threat_name","short_description","status","img_url","price"]
 
 class ImageSerializer(serializers.ModelSerializer):
     class Meta:

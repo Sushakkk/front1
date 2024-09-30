@@ -17,9 +17,19 @@ class ThreatList(APIView):
 
     # получить список угроз
     def get(self, request):
-        threats = self.model_class.objects.all()
+        if 'price_from' in request.GET and 'price_to' in request.GET:
+            threats = self.model_class.objects.filter(price__lte=request.GET['price_to'],price__gte=request.GET['price_from'])
+        else:
+            threats = self.model_class.objects.all()
+        
         serializer = self.serializer_class(threats, many=True)
-        return Response(serializer.data)
+        resp = serializer.data
+        draft_request = Request.objects.filter(user=request.user, status='draft').first()
+        if draft_request:
+            request_serializer = RequestSerializer(draft_request)  # Use RequestSerializer here
+            resp.append({'request': request_serializer.data})
+
+        return Response(resp,status=status.HTTP_200_OK)
 
 class ThreatDetail(APIView):
     model_class = Threat
@@ -46,8 +56,8 @@ class ThreatDetail(APIView):
     # добавить новую угрозу (для модератора)
     def post(self, request, format=None):
 
-        if not request.user.is_staff:
-            return Response(status=status.HTTP_403_FORBIDDEN)
+        #if not request.user.is_staff:
+        #    return Response(status=status.HTTP_403_FORBIDDEN)
 
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
@@ -91,14 +101,18 @@ class AddThreatView(APIView):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
-
-# TODO
 class ImageView(APIView):
     def post(self, request):
-        if not request.user.is_staff:
-            return Response(status=status.HTTP_403_FORBIDDEN)
-
-        return Response({}, status=status.HTTP_400_BAD_REQUEST)
+        #if not request.user.is_staff:
+        #    return Response(status=status.HTTP_403_FORBIDDEN)
+        serializer = AddImageSerializer(data=request.data)
+        if serializer.is_valid():
+            threat = Threat.objects.get(serializer.validated_data['threat_id'])
+            threat.img_url = serializer.validated_data['img_url']
+            threat.save()
+            return Response(status=status.HTTP_200_OK)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
     
 
 
@@ -147,21 +161,16 @@ class UserLogoutView(APIView):
 
 
 
-# Модераторы
 class ListRequests(APIView):
-    def post(self, request):
+    def get(self, request):
 
-        if not request.user.is_staff:
-            return Response(status=status.HTTP_403_FORBIDDEN)
-
-        serializer = CheckUsernameSerializer(data=request.data)
-        if serializer.is_valid():
-            user = User.objects.get(username=serializer.validated_data['username'])
-            requests = Request.objects.filter(user=user).exclude(status='draft').exclude(status='deleted')
-            req_serializer = RequestSerializer(requests,many=True)
-            return Response(req_serializer.data,status=status.HTTP_200_OK)
+        if 'date' in request.GET and 'status' in request.GET:
+            requests = Request.objects.filter(formed_at__gte=request.GET['date'],status=request.GET['status']).exclude(formed_at=None)
         else:
-            return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+            requests = Request.objects.all()
+        
+        req_serializer = RequestSerializer(requests,many=True)
+        return Response(req_serializer.data,status=status.HTTP_200_OK)
 
 class GetRequests(APIView):
     
@@ -200,8 +209,8 @@ class FormRequests(APIView):
         req = get_object_or_404(Request, pk=pk)
         if not req.status=='draft':
             return Response(status=status.HTTP_400_BAD_REQUEST)
-        if not request.user == req.user:
-            return Response(status=status.HTTP_403_FORBIDDEN)
+        #if not request.user == req.user:
+        #    return Response(status=status.HTTP_403_FORBIDDEN)
         
         if req.created_at > datetime.now():
             return Response(status=status.HTTP_400_BAD_REQUEST)
@@ -218,13 +227,15 @@ class FormRequests(APIView):
 class ModerateRequests(APIView):
     def put(self,request,pk):
 
-        if not request.user.is_staff:
-            return Response(status=status.HTTP_403_FORBIDDEN)
+        #if not request.user.is_staff:
+        #    return Response(status=status.HTTP_403_FORBIDDEN)
 
         req = get_object_or_404(Request, pk=pk)
         serializer = AcceptRequestSerializer(data=request.data)
+        if not req.status == 'formed':
+            return Response({'error':'Заявка не сформирована'},status=status.HTTP_400_BAD_REQUEST)
         if serializer.is_valid():
-            if serializer.validated_data['accept'] == True:
+            if serializer.validated_data['accept'] == True and req.status:
                 req.status = 'accepted'
                 req.moderator = request.user
 
@@ -248,10 +259,14 @@ class ModerateRequests(APIView):
         
 
     def delete(self, request, pk):
-        if not request.user.is_staff:
-            return Response(status=status.HTTP_403_FORBIDDEN)
         req = get_object_or_404(Request, pk=pk)
+
+        # TODO auth
+        #if not request.user.is_staff or not request.user == Request:
+        #    return Response(status=status.HTTP_403_FORBIDDEN)
+        
         req.status = 'deleted'
+        req.ended_at = datetime.now()
         req.save()
         return Response(status=status.HTTP_200_OK)
     
