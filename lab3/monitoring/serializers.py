@@ -22,6 +22,22 @@ class RequestSerializer(serializers.ModelSerializer):
         model = Request
         fields = ["pk","status","created_at","formed_at","ended_at","user","moderator","final_price"]
 
+#class RequestSerializerInList(serializers.Serializer):
+#    request_id = serializers.IntegerField(required=True)
+#    final_price = serializers.IntegerField(required=False)
+#    threats_counter = serializers.IntegerField(required=True)
+
+class RequestSerializerInList(serializers.ModelSerializer):
+    threats_amount = serializers.SerializerMethodField()
+    class Meta:
+        model = Request
+        fields = ["pk","threats_amount"] 
+
+    def get_threats_amount(self, obj):
+        return RequestThreat.objects.filter(request_id=obj.pk).count()
+
+
+
 class PutRequestSerializer(serializers.ModelSerializer):
     class Meta:
         model = Request

@@ -26,8 +26,10 @@ class ThreatList(APIView):
         resp = serializer.data
         draft_request = Request.objects.filter(user=request.user, status='draft').first()
         if draft_request:
-            request_serializer = RequestSerializer(draft_request)  # Use RequestSerializer here
+            request_serializer = RequestSerializerInList(draft_request)  # Use RequestSerializer here
             resp.append({'request': request_serializer.data})
+        else:
+            resp.append({'request': None})
 
         return Response(resp,status=status.HTTP_200_OK)
 
