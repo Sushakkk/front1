@@ -165,11 +165,10 @@ class UserLogoutView(APIView):
 
 class ListRequests(APIView):
     def get(self, request):
-
         if 'date' in request.GET and 'status' in request.GET:
-            requests = Request.objects.filter(formed_at__gte=request.GET['date'],status=request.GET['status']).exclude(formed_at=None)
+            requests = Request.objects.filter(formed_at__gte=request.GET['date'],status=request.GET['status']).exclude(formed_at=None).exclude(status='draft')
         else:
-            requests = Request.objects.all()
+            requests = Request.objects.exclude(status='draft')
         
         req_serializer = RequestSerializer(requests,many=True)
         return Response(req_serializer.data,status=status.HTTP_200_OK)
