@@ -24,11 +24,10 @@
                 {% for threat in current_threats %}
                     <div class="card card-request">
                         <div class="card__content">
-                            <h3 class="card__name card__name-request">{{ threat.threat_name }} </h3>
-                            <div class="card_description card_description-request"> {{ threat.short_description }}</div>
                             <table class="request-table">
                                 <thead>
                                     <tr>
+                                        <th>Услуга</th>
                                         <th>Компания</th>
                                         <th>Стоимость мониторинга</th>
                                         <th>Комментарий</th>
@@ -36,6 +35,7 @@
                                 </thead>
                                 <tbody>
                                         <tr>
+                                            <td>{{ threat.threat_name }}</td>
                                             <td>{{ threat.company_name }}</td>
                                             <td>{{ threat.price }} ₽</td>
                                             <td>{{ threat.comment }}</td>
