@@ -49,6 +49,29 @@ class ThreatList(APIView):
 
         return Response(resp,status=status.HTTP_200_OK)
 
+
+class AddThreatView(APIView):
+    model_class = Threat
+    serializer_class = ThreatDetailSerializer
+
+     # добавить новую угрозу (для модератора)
+    @swagger_auto_schema(
+        operation_description="Add a new threat (moderators only).",
+        request_body=ThreatDetailSerializer,
+        responses={201: ThreatDetailSerializer(), 400: 'Bad Request'}
+    )
+    def post(self, request, format=None):
+
+        if not request.user.is_staff:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 class ThreatDetail(APIView):
     model_class = Threat
     serializer_class = ThreatDetailSerializer
@@ -78,23 +101,6 @@ class ThreatDetail(APIView):
         threat.status = 'deleted'
         threat.save()
         return Response(status=status.HTTP_204_NO_CONTENT)
-    
-    # добавить новую угрозу (для модератора)
-    @swagger_auto_schema(
-        operation_description="Add a new threat (moderators only).",
-        request_body=ThreatDetailSerializer,
-        responses={201: ThreatDetailSerializer(), 400: 'Bad Request'}
-    )
-    def post(self, request, format=None):
-
-        if not request.user.is_staff:
-            return Response(status=status.HTTP_403_FORBIDDEN)
-
-        serializer = self.serializer_class(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     # обновление угрозы (для модератора)
     @swagger_auto_schema(

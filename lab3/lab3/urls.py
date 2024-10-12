@@ -46,28 +46,28 @@ urlpatterns = [
     
 
     path(r'threats/', views.ThreatList.as_view(), name='threats-list'),                             # список угроз (GET)
-    path(r'threats/create/', views.ThreatDetail.as_view(), name='threats-create'),                     # добавление (POST), 
-    path(r'threats/delete/<int:pk>/', views.ThreatDetail.as_view(), name='threats-delete'), 
-    path(r'threats/<int:pk>/', views.ThreatDetail.as_view(), name='threat-detail'),             # детальное описание угрозы (GET), изменение (PUT), удаление (DELETE)
+    path(r'threats/detail/', views.AddThreatView.as_view(), name='threats-create'),                     # добавление (POST), 
+    path(r'threats/detail/<int:pk>/', views.ThreatDetail.as_view(), name='threats-delete'),            # удаление DELETE
+    path(r'threats/detail/<int:pk>/', views.ThreatDetail.as_view(), name='threat-detail'),             # детальное описание угрозы (GET)
     path(r'threats/add/<int:pk>/', views.AddThreatView.as_view(), name='add-threat-to-request'), # добавление в заявку для пользователя
     path(r'threats/image/', views.ImageView.as_view(), name='add-image'),             # замена изображения
 
     #requests domain
-    path(r'list-requests/',views.ListRequests.as_view(),name='list-requests-by-username'),
+    path(r'requests/',views.ListRequests.as_view(),name='list-requests-by-username'),
     path(r'requests/<int:pk>/',views.GetRequests.as_view(),name='get-request-by-id'),
     path(r'requests/<int:pk>/',views.GetRequests.as_view(),name='put-request-by-id'),
     
-    path(r'form-request/<int:pk>/',views.FormRequests.as_view(),name='form-request-by-id'),
-    path(r'moderate-request/<int:pk>/',views.ModerateRequests.as_view(),name='moderate-request-by-id'),
-    path(r'delete-request/<int:pk>/',views.ModerateRequests.as_view(),name='delete-request-by-id'),
+    path(r'requests/form/<int:pk>/',views.FormRequests.as_view(),name='form-request-by-id'),
+    path(r'requests/moderate/<int:pk>/',views.ModerateRequests.as_view(),name='moderate-request-by-id'),
+    path(r'requests/moderate/<int:pk>/',views.ModerateRequests.as_view(),name='delete-request-by-id'),
 
     #m-m
-    path(r'delete-from-request/<int:pk>/',views.EditRequestThreat.as_view(),name='delete-from-request-by-id'),
-    path(r'add-price/<int:pk>/',views.EditRequestThreat.as_view(),name='add-price-request-by-id'),
+    path(r'request-threat/<int:pk>/',views.EditRequestThreat.as_view(),name='delete-from-request-by-id'),
+    path(r'request-threat/<int:pk>/',views.EditRequestThreat.as_view(),name='add-price-request-by-id'),
 
     # user domain
-    path('register/', views.UserRegistrationView.as_view(), name='register'),
-    path('profile/', views.UserUpdateView.as_view(), name='profile'),
-    path('login/', views.UserLoginView.as_view(), name='login'),
-    path('logout/', views.UserLogoutView.as_view(), name='logout'),
+    path('auth/register/', views.UserRegistrationView.as_view(), name='register'),
+    path('auth/profile/', views.UserUpdateView.as_view(), name='profile'),
+    path('auth/login/', views.UserLoginView.as_view(), name='login'),
+    path('auth/logout/', views.UserLogoutView.as_view(), name='logout'),
 ]
