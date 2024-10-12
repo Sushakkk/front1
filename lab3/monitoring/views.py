@@ -279,8 +279,10 @@ class UserLogoutView(APIView):
     
 
 
-#TODO user or moderator
 class ListRequests(APIView):
+
+    permission_classes = [IsAuthenticated]
+
     @swagger_auto_schema(
         operation_description="Get a list of requests. Optionally filter by date and status.",
         manual_parameters=[
@@ -294,6 +296,10 @@ class ListRequests(APIView):
             requests = Request.objects.filter(formed_at__gte=request.GET['date'],status=request.GET['status']).exclude(formed_at=None).exclude(status='draft')
         else:
             requests = Request.objects.exclude(status='draft')
+
+        # если не модератор - выводим только свои заявки
+        if not request.user.is_staff:
+            requests.filter(user=request.user)
         
         req_serializer = RequestSerializer(requests,many=True)
         return Response(req_serializer.data,status=status.HTTP_200_OK)
@@ -376,8 +382,8 @@ class ModerateRequests(APIView):
     )
     def put(self,request,pk):
 
-        #if not request.user.is_staff:
-        #    return Response(status=status.HTTP_403_FORBIDDEN)
+        if not request.user.is_staff:
+            return Response(status=status.HTTP_403_FORBIDDEN)
 
         req = get_object_or_404(Request, pk=pk)
         serializer = AcceptRequestSerializer(data=request.data)
