@@ -10,6 +10,10 @@ from rest_framework.authtoken.models import Token
 from django.contrib.auth import logout
 from datetime import datetime 
 
+from django.conf import settings
+from minio import Minio
+from django.core.files.uploadedfile import InMemoryUploadedFile
+
 
 class ThreatList(APIView):
     model_class = Threat
@@ -103,18 +107,53 @@ class AddThreatView(APIView):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
+
+
 class ImageView(APIView):
+    
+    def process_file_upload(self, file_object: InMemoryUploadedFile, client, image_name):
+        try:
+            client.put_object('static', image_name, file_object, file_object.size)
+            return f"http://localhost:9000/static/{image_name}"
+        except Exception as e:
+            return {"error": str(e)}
+
+    def add_pic(self, threat, pic):
+        client = Minio(           
+                endpoint=settings.AWS_S3_ENDPOINT_URL,
+            access_key=settings.AWS_ACCESS_KEY_ID,
+            secret_key=settings.AWS_SECRET_ACCESS_KEY,
+            secure=settings.MINIO_USE_SSL
+        )
+        i = threat.id
+        img_obj_name = f"{i}.png"
+
+        if not pic:
+            return Response({"error": "Нет файла для изображения логотипа."})
+        result = self.process_file_upload(pic, client, img_obj_name)
+
+        if 'error' in result:
+            return Response(result)
+
+        threat.img_url = result
+        threat.save()
+
+        return Response({"message": "success"})
+
     def post(self, request):
         #if not request.user.is_staff:
         #    return Response(status=status.HTTP_403_FORBIDDEN)
         serializer = AddImageSerializer(data=request.data)
         if serializer.is_valid():
-            threat = Threat.objects.get(serializer.validated_data['threat_id'])
-            threat.img_url = serializer.validated_data['img_url']
-            threat.save()
-            return Response(status=status.HTTP_200_OK)
+            threat = Threat.objects.get(pk=serializer.validated_data['threat_id'])
+            pic = request.FILES.get("pic")
+            pic_result = self.add_pic(threat, pic)
+            # Если в результате вызова add_pic результат - ошибка, возвращаем его.
+            if 'error' in pic_result.data:    
+                return pic_result
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 
 

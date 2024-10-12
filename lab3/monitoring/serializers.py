@@ -6,7 +6,6 @@ from django.contrib.auth import authenticate
 
 class AddImageSerializer(serializers.Serializer):
     threat_id = serializers.IntegerField(required=True)
-    img_url = serializers.CharField(required=True)
 
     def validate(self, data):
         threat_id = data.get('threat_id')
