@@ -1,3 +1,4 @@
+from collections import OrderedDict
 from .models import Threat, Request, RequestThreat
 from rest_framework import serializers
 from django.contrib.auth.models import User
@@ -47,10 +48,24 @@ class ThreatDetailSerializer(serializers.ModelSerializer):
         model = Threat
         fields = ["pk","threat_name","company_name","short_description","description","status","img_url","price","detections"]
 
+    def get_fields(self):
+        new_fields = OrderedDict()
+        for name, field in super().get_fields().items():
+            field.required = False
+            new_fields[name] = field
+        return new_fields 
+
 class ThreatListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Threat
         fields = ["pk","threat_name","short_description","status","img_url","price"]
+
+    def get_fields(self):
+        new_fields = OrderedDict()
+        for name, field in super().get_fields().items():
+            field.required = False
+            new_fields[name] = field
+        return new_fields 
 
 class ImageSerializer(serializers.ModelSerializer):
     class Meta:

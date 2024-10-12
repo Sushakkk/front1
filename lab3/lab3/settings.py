@@ -42,6 +42,8 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     # Наше приложение
     'monitoring',
+    #swagger
+    'drf_yasg',
 ]
 
 MIDDLEWARE = [

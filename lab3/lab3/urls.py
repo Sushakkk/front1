@@ -18,14 +18,38 @@ from django.contrib import admin
 from monitoring import views 
 from django.urls import include, path
 from rest_framework import routers
+from drf_yasg.views import get_schema_view
+from drf_yasg import openapi
+from rest_framework import permissions
+
+schema_view = get_schema_view(
+    openapi.Info(
+        title="API Documentation",
+        default_version='v1',
+        description="API documentation for the project",
+        terms_of_service="https://www.google.com/policies/terms/",
+        contact=openapi.Contact(email="contact@yourapi.com"),
+        license=openapi.License(name="BSD License"),
+    ),
+    public=True,
+    permission_classes=(permissions.AllowAny,),
+)
+
 
 urlpatterns = [
+
+    path('swagger', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+    path('swagger.json', schema_view.without_ui(cache_timeout=0), name='schema-json'),
+    path('swagger.yaml', schema_view.without_ui(cache_timeout=0), name='schema-yaml'),
+
     path('admin/', admin.site.urls),
-    path(r'threats/', views.ThreatList.as_view(), name='threats-list'),                         # список угроз (GET)
+    
+
+    path(r'threats/', views.ThreatList.as_view(), name='threats-list'),                             # список угроз (GET)
     path(r'threats/create/', views.ThreatDetail.as_view(), name='threats-create'),                     # добавление (POST), 
     path(r'threats/delete/<int:pk>/', views.ThreatDetail.as_view(), name='threats-delete'), 
     path(r'threats/<int:pk>/', views.ThreatDetail.as_view(), name='threat-detail'),             # детальное описание угрозы (GET), изменение (PUT), удаление (DELETE)
-    path(r'threats/add/', views.AddThreatView.as_view(), name='add-threat-to-request'), # добавление в заявку для пользователя
+    path(r'threats/add/<int:pk>/', views.AddThreatView.as_view(), name='add-threat-to-request'), # добавление в заявку для пользователя
     path(r'threats/image/', views.ImageView.as_view(), name='add-image'),             # замена изображения
 
     #requests domain

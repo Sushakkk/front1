@@ -14,12 +14,24 @@ from django.conf import settings
 from minio import Minio
 from django.core.files.uploadedfile import InMemoryUploadedFile
 
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
+
 
 class ThreatList(APIView):
     model_class = Threat
     serializer_class = ThreatListSerializer
-
+    
     # получить список угроз
+    @swagger_auto_schema(
+        operation_description="Get a list of threats. Optionally filter by price range using 'price_from' and 'price_to'.",
+        manual_parameters=[
+            openapi.Parameter('price_from', openapi.IN_QUERY, description="Minimum price of threat", type=openapi.TYPE_NUMBER),
+            openapi.Parameter('price_to', openapi.IN_QUERY, description="Maximum price of threat", type=openapi.TYPE_NUMBER)
+        ],
+        responses={200: ThreatListSerializer(many=True)}
+    )
+
     def get(self, request):
         if 'price_from' in request.GET and 'price_to' in request.GET:
             threats = self.model_class.objects.filter(price__lte=request.GET['price_to'],price__gte=request.GET['price_from'])
@@ -42,12 +54,20 @@ class ThreatDetail(APIView):
     serializer_class = ThreatDetailSerializer
 
     # получить описание угрозы
+    @swagger_auto_schema(
+        operation_description="Get details of a specific threat by ID.",
+        responses={200: ThreatDetailSerializer()}
+    )
     def get(self, request, pk):
         threat = get_object_or_404(self.model_class, pk=pk)
         serializer = self.serializer_class(threat)
         return Response(serializer.data)
     
 
+    @swagger_auto_schema(
+        operation_description="Delete a threat by ID (moderators only).",
+        responses={204: 'No Content', 403: 'Forbidden'}
+    )
     # удалить угрозу (для модератора)
     def delete(self, request, pk):
 
@@ -60,10 +80,15 @@ class ThreatDetail(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
     
     # добавить новую угрозу (для модератора)
+    @swagger_auto_schema(
+        operation_description="Add a new threat (moderators only).",
+        request_body=ThreatDetailSerializer,
+        responses={201: ThreatDetailSerializer(), 400: 'Bad Request'}
+    )
     def post(self, request, format=None):
 
-        #if not request.user.is_staff:
-        #    return Response(status=status.HTTP_403_FORBIDDEN)
+        if not request.user.is_staff:
+            return Response(status=status.HTTP_403_FORBIDDEN)
 
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
@@ -72,6 +97,11 @@ class ThreatDetail(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     # обновление угрозы (для модератора)
+    @swagger_auto_schema(
+        operation_description="Update a threat (moderators only).",
+        request_body=ThreatDetailSerializer,
+        responses={200: ThreatDetailSerializer(), 400: 'Bad Request'}
+    )
     def put(self, request, pk, format=None):
 
         if not request.user.is_staff:
@@ -86,26 +116,41 @@ class ThreatDetail(APIView):
  
 
 class AddThreatView(APIView):
+
+    permission_classes = [IsAuthenticated]
+
     # добавление услуги в заявку
-    def post(self, request):
+    @swagger_auto_schema(
+        operation_description="Add a threat to a user's draft request. Creates a new request if no draft exists.",
+        responses={200: "Threat successfully added to the request", 404: "Threat not found"},
+        manual_parameters=[
+            openapi.Parameter('pk', openapi.IN_PATH, description="Primary key of the threat", type=openapi.TYPE_INTEGER, required=True)
+        ],
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={'price': openapi.Schema(type=openapi.TYPE_NUMBER, description='Price of the threat', example=100.00)},
+            required=[]
+        )
+    )
+    def post(self, request, pk):
         # создаем заявку, если ее еще нет
         if not Request.objects.filter(user=request.user,status='draft').exists():
             new_req = Request()
             new_req.user = request.user
             new_req.save()
             
+        # получаем id заявки
         request_id = Request.objects.filter(user=request.user,status='draft').first().pk
-        serializer = RequestThreatSerializer(data=request.data)
-        if serializer.is_valid():
+        if Threat.objects.filter(pk=pk).exists():
             new_req_threat = RequestThreat()
-            new_req_threat.threat_id = serializer.validated_data["threat_id"]
+            new_req_threat.threat_id = pk
             new_req_threat.request_id = request_id
             if 'price' in request.data:
                 new_req_threat.price = request.data["price"]
             new_req_threat.save()
             return Response(status=status.HTTP_200_OK)
         else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error':'threat not found'}, status=status.HTTP_404_NOT_FOUND)
         
 
 
@@ -140,9 +185,16 @@ class ImageView(APIView):
 
         return Response({"message": "success"})
 
+    @swagger_auto_schema(
+        operation_description="Upload an image for a specific threat.",
+        request_body=AddImageSerializer,
+        responses={201: "Image uploaded successfully", 400: "Bad request"}
+    )
     def post(self, request):
-        #if not request.user.is_staff:
-        #    return Response(status=status.HTTP_403_FORBIDDEN)
+
+        if not request.user.is_staff:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+        
         serializer = AddImageSerializer(data=request.data)
         if serializer.is_valid():
             threat = Threat.objects.get(pk=serializer.validated_data['threat_id'])
@@ -159,6 +211,11 @@ class ImageView(APIView):
 
 # USER VIEWS
 class UserRegistrationView(APIView):
+    @swagger_auto_schema(
+        operation_description="Register a new user.",
+        request_body=UserRegistrationSerializer,
+        responses={201: "User registered successfully", 400: "Bad request"}
+    )
     def post(self, request):
         serializer = UserRegistrationSerializer(data=request.data)
         if serializer.is_valid():
@@ -171,6 +228,11 @@ class UserRegistrationView(APIView):
 class UserUpdateView(APIView):
     permission_classes = [IsAuthenticated]
 
+    @swagger_auto_schema(
+        operation_description="Update the profile of the authenticated user.",
+        request_body=UserUpdateSerializer,
+        responses={200: UserUpdateSerializer(), 400: "Bad request"}
+    )
     def put(self, request):
         serializer = UserUpdateSerializer(instance=request.user, data=request.data, partial=True)
         if serializer.is_valid():
@@ -181,6 +243,12 @@ class UserUpdateView(APIView):
 
 # Аутентификация пользователя
 class UserLoginView(APIView):
+
+    @swagger_auto_schema(
+        operation_description="Authenticate a user and return a token.",
+        request_body=AuthTokenSerializer,
+        responses={200: "Token returned successfully", 400: "Invalid credentials"}
+    )
     def post(self, request):
         serializer = AuthTokenSerializer(data=request.data)
         if serializer.is_valid():
@@ -194,6 +262,10 @@ class UserLoginView(APIView):
 class UserLogoutView(APIView):
     permission_classes = [IsAuthenticated]
 
+    @swagger_auto_schema(
+        operation_description="Logout the authenticated user.",
+        responses={204: "No content"}
+    )
     def post(self, request):
         request.user.auth_token.delete()  # Удаляем токен
         logout(request)
@@ -201,8 +273,16 @@ class UserLogoutView(APIView):
     
 
 
-
+#TODO user or moderator
 class ListRequests(APIView):
+    @swagger_auto_schema(
+        operation_description="Get a list of requests. Optionally filter by date and status.",
+        manual_parameters=[
+            openapi.Parameter('date', openapi.IN_QUERY, description="Filter requests after a specific date", type=openapi.TYPE_STRING, format=openapi.FORMAT_DATE),
+            openapi.Parameter('status', openapi.IN_QUERY, description="Filter requests by status", type=openapi.TYPE_STRING)
+        ],
+        responses={200: RequestSerializer(many=True)}
+    )
     def get(self, request):
         if 'date' in request.GET and 'status' in request.GET:
             requests = Request.objects.filter(formed_at__gte=request.GET['date'],status=request.GET['status']).exclude(formed_at=None).exclude(status='draft')
@@ -212,8 +292,13 @@ class ListRequests(APIView):
         req_serializer = RequestSerializer(requests,many=True)
         return Response(req_serializer.data,status=status.HTTP_200_OK)
 
+#TODO user or moderator
 class GetRequests(APIView):
     
+    @swagger_auto_schema(
+        operation_description="Get details of a request by ID, including associated threats.",
+        responses={200: RequestSerializer()}
+    )
     def get(self, request, pk):
         req = get_object_or_404(Request, pk=pk)
         serializer = RequestSerializer(req)
@@ -233,6 +318,11 @@ class GetRequests(APIView):
 
         return Response(response,status=status.HTTP_200_OK)
     
+    @swagger_auto_schema(
+        operation_description="Update a request by ID.",
+        request_body=PutRequestSerializer,
+        responses={200: "Request updated successfully", 400: "Bad request"}
+    )
     def put(self, request, pk):
         serializer = PutRequestSerializer(data=request.data)
         if serializer.is_valid():
@@ -244,7 +334,15 @@ class GetRequests(APIView):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
+# TODO check user
 class FormRequests(APIView):
+
+    permission_classes = [IsAuthenticated]
+
+    @swagger_auto_schema(
+        operation_description="Mark a request as formed. Only available for requests with a 'draft' status.",
+        responses={200: "Request successfully formed", 400: "Bad request"}
+    )
     def put(self, request, pk):
         req = get_object_or_404(Request, pk=pk)
         if not req.status=='draft':
@@ -265,6 +363,11 @@ class FormRequests(APIView):
     
 
 class ModerateRequests(APIView):
+    @swagger_auto_schema(
+        operation_description="Approve or decline a request (for moderators).",
+        request_body=AcceptRequestSerializer,
+        responses={200: "Request moderated successfully", 400: "Bad request"}
+    )
     def put(self,request,pk):
 
         #if not request.user.is_staff:
@@ -298,6 +401,10 @@ class ModerateRequests(APIView):
             return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
         
 
+    @swagger_auto_schema(
+        operation_description="Delete a request (for moderators).",
+        responses={200: "Request deleted successfully"}
+    )
     def delete(self, request, pk):
         req = get_object_or_404(Request, pk=pk)
 
@@ -312,6 +419,16 @@ class ModerateRequests(APIView):
     
 
 class EditRequestThreat(APIView):
+    
+    @swagger_auto_schema(
+        operation_description="Remove a threat from a request.",
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={'threat_id': openapi.Schema(type=openapi.TYPE_INTEGER, description="ID of the threat")},
+            required=['threat_id']
+        ),
+        responses={200: "Threat removed successfully", 400: "Bad request"}
+    )
     def delete(self, request, pk):
         if 'threat_id' in request.data:
             record = get_object_or_404(RequestThreat, request=pk,threat=request.data['threat_id'])
@@ -320,6 +437,18 @@ class EditRequestThreat(APIView):
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         
+    @swagger_auto_schema(
+        operation_description="Update the price of a threat in a request.",
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'threat_id': openapi.Schema(type=openapi.TYPE_INTEGER, description="ID of the threat"),
+                'price': openapi.Schema(type=openapi.TYPE_NUMBER, description="New price of the threat")
+            },
+            required=['threat_id', 'price']
+        ),
+        responses={200: "Price updated successfully", 400: "Bad request"}
+    )
     def put(self,request,pk):
         if not request.user.is_staff:
             return Response(status=status.HTTP_403_FORBIDDEN)
