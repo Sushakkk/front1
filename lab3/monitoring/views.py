@@ -270,7 +270,7 @@ class UserLoginView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-# Представление для выхода из системы
+# Логаут
 class UserLogoutView(APIView):
     permission_classes = [IsAuthenticated]
     @swagger_auto_schema(
