@@ -50,7 +50,7 @@ class ThreatList(APIView):
         return Response(resp,status=status.HTTP_200_OK)
 
 
-class AddThreatView(APIView):
+class AddNewThreatView(APIView):
     model_class = Threat
     serializer_class = ThreatDetailSerializer
 
@@ -346,7 +346,6 @@ class GetRequests(APIView):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
-# TODO check user
 class FormRequests(APIView):
 
     permission_classes = [IsAuthenticated]
@@ -359,8 +358,10 @@ class FormRequests(APIView):
         req = get_object_or_404(Request, pk=pk)
         if not req.status=='draft':
             return Response(status=status.HTTP_400_BAD_REQUEST)
-        #if not request.user == req.user:
-        #    return Response(status=status.HTTP_403_FORBIDDEN)
+        
+        # authorization check
+        if not request.user == req.user:
+            return Response(status=status.HTTP_403_FORBIDDEN)
         
         if req.created_at > datetime.now():
             return Response(status=status.HTTP_400_BAD_REQUEST)

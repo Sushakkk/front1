@@ -46,7 +46,7 @@ urlpatterns = [
     
 
     path(r'threats/', views.ThreatList.as_view(), name='threats-list'),                             # список угроз (GET)
-    path(r'threats/detail/', views.AddThreatView.as_view(), name='threats-create'),                     # добавление (POST), 
+    path(r'threats/detail/', views.AddNewThreatView.as_view(), name='threats-create'),                     # добавление (POST), 
     path(r'threats/detail/<int:pk>/', views.ThreatDetail.as_view(), name='threats-delete'),            # удаление DELETE
     path(r'threats/detail/<int:pk>/', views.ThreatDetail.as_view(), name='threat-detail'),             # детальное описание угрозы (GET)
     path(r'threats/add/<int:pk>/', views.AddThreatView.as_view(), name='add-threat-to-request'), # добавление в заявку для пользователя
