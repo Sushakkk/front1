@@ -136,8 +136,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Настройки для аутентификации через токены
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.TokenAuthentication',
-    ],
+    ]
 }
 
 AWS_STORAGE_BUCKET_NAME = 'static'
@@ -145,3 +147,23 @@ AWS_ACCESS_KEY_ID = 'minio'
 AWS_SECRET_ACCESS_KEY = 'minio124'
 AWS_S3_ENDPOINT_URL = 'localhost:9000'
 MINIO_USE_SSL = False
+
+
+
+# Настройки Redis
+SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+SESSION_CACHE_ALIAS = "default"
+
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        },
+        "TIMEOUT": 60*60*24,
+    }
+}
+
+SESSION_COOKIE_NAME = "sessionid"
+SESSION_COOKIE_HTTPONLY = False

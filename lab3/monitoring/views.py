@@ -8,6 +8,7 @@ from rest_framework.decorators import api_view
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import logout
+from django.contrib.auth import login
 from datetime import datetime 
 
 from django.conf import settings
@@ -16,7 +17,11 @@ from django.core.files.uploadedfile import InMemoryUploadedFile
 
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
 
+from rest_framework.decorators import authentication_classes
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 
 class ThreatList(APIView):
     model_class = Threat
@@ -120,7 +125,6 @@ class ThreatDetail(APIView):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
  
-
 class AddThreatView(APIView):
 
     permission_classes = [IsAuthenticated]
@@ -214,21 +218,6 @@ class ImageView(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 
-
-# USER VIEWS
-class UserRegistrationView(APIView):
-    @swagger_auto_schema(
-        operation_description="Register a new user.",
-        request_body=UserRegistrationSerializer,
-        responses={201: "User registered successfully", 400: "Bad request"}
-    )
-    def post(self, request):
-        serializer = UserRegistrationSerializer(data=request.data)
-        if serializer.is_valid():
-            user = serializer.save()
-            token, created = Token.objects.get_or_create(user=user)
-            return Response({'token': token.key}, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 # Личный кабинет (обновление профиля)
 class UserUpdateView(APIView):
@@ -247,40 +236,53 @@ class UserUpdateView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-# Аутентификация пользователя
-class UserLoginView(APIView):
-
+class UserRegistrationView(APIView):
     @swagger_auto_schema(
-        operation_description="Authenticate a user and return a token.",
+        operation_description="Register a new user.",
+        request_body=UserRegistrationSerializer,
+        responses={201: "User registered successfully", 400: "Bad request"}
+    )
+    def post(self, request):
+        serializer = UserRegistrationSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.save()
+            return Response({'message': 'User registered successfully'}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UserLoginView(APIView):
+    @swagger_auto_schema(
+        operation_description="Authenticate a user with username and password. Returns session cookie upon success.",
         request_body=AuthTokenSerializer,
-        responses={200: "Token returned successfully", 400: "Invalid credentials"}
+        responses={200: "Login successful", 400: "Invalid credentials"}
     )
     def post(self, request):
         serializer = AuthTokenSerializer(data=request.data)
         if serializer.is_valid():
-            user = serializer.validated_data['user']
-            token, created = Token.objects.get_or_create(user=user)
-            return Response({'token': token.key}, status=status.HTTP_200_OK)
+            username = request.data['username']
+            password = request.data['password']
+            user = authenticate(username=username, password=password)
+            if user is not None:
+                login(request, user)  # Сохраняем информацию о пользователе в сессии
+                return Response({'message': 'Login successful'}, status=status.HTTP_200_OK)
+            else:
+                return Response({'error': 'Invalid credentials'}, status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-# Деавторизация пользователя
+# Представление для выхода из системы
 class UserLogoutView(APIView):
     permission_classes = [IsAuthenticated]
-
     @swagger_auto_schema(
-        operation_description="Logout the authenticated user.",
-        responses={204: "No content"}
+        operation_description="Logout the authenticated user. Removes the session.",
+        responses={204: "Logout successful"}
     )
     def post(self, request):
-        request.user.auth_token.delete()  # Удаляем токен
-        logout(request)
-        return Response(status=status.HTTP_204_NO_CONTENT)
-    
+        logout(request)  # Удаляем сессию
+        return Response({'message': 'Logout successful'}, status=status.HTTP_204_NO_CONTENT)
 
 
 class ListRequests(APIView):
-
     permission_classes = [IsAuthenticated]
 
     @swagger_auto_schema(
@@ -291,20 +293,23 @@ class ListRequests(APIView):
         ],
         responses={200: RequestSerializer(many=True)}
     )
-    def get(self, request):
-        if 'date' in request.GET and 'status' in request.GET:
-            requests = Request.objects.filter(formed_at__gte=request.GET['date'],status=request.GET['status']).exclude(formed_at=None).exclude(status='draft')
-        else:
-            requests = Request.objects.exclude(status='draft')
 
-        # если не модератор - выводим только свои заявки
-        if not request.user.is_staff:
-            requests.filter(user=request.user)
+    def get(self, request):
+        if request.user.is_staff:
+            if 'date' in request.GET and 'status' in request.GET:
+                requests = Request.objects.filter(formed_at__gte=request.GET['date'],status=request.GET['status']).exclude(formed_at=None).exclude(status='draft')
+            else:
+                requests = Request.objects.exclude(status='draft')
+        else:
+            if 'date' in request.GET and 'status' in request.GET:
+                requests = Request.objects.filter(formed_at__gte=request.GET['date'],status=request.GET['status'],user=request.user)
+            else:
+                requests = Request.objects.filter(user=request.user)
+
         
         req_serializer = RequestSerializer(requests,many=True)
         return Response(req_serializer.data,status=status.HTTP_200_OK)
 
-#TODO user or moderator
 class GetRequests(APIView):
     
     @swagger_auto_schema(
@@ -401,7 +406,8 @@ class ModerateRequests(APIView):
                 final_price = 0
 
                 for threat_request in threat_requests:
-                    final_price = final_price + threat_request.price
+                    if threat_request.price != None:
+                        final_price = final_price + threat_request.price
 
                 req.final_price = final_price
             else:
