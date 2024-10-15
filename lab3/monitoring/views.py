@@ -50,7 +50,7 @@ class ThreatList(APIView):
             request_serializer = RequestSerializerInList(draft_request)  # Use RequestSerializer here
             resp.append({'request': request_serializer.data})
         else:
-            resp.append({'request': None})
+            resp.append({'request': {'threats_amount':0}})
 
         return Response(resp,status=status.HTTP_200_OK)
 
