@@ -399,7 +399,7 @@ class ModerateRequests(APIView):
             return Response({'error':'Заявка не сформирована'},status=status.HTTP_400_BAD_REQUEST)
         if serializer.is_valid():
             if serializer.validated_data['accept'] == True and req.status:
-                req.status = 'accepted'
+                req.status = 'ended'
                 req.moderator = request.user
 
                 # calc final price
@@ -434,7 +434,7 @@ class ModerateRequests(APIView):
         #    return Response(status=status.HTTP_403_FORBIDDEN)
         
         req.status = 'deleted'
-        req.ended_at = datetime.now()
+        req.formed_at = datetime.now()
         req.save()
         return Response(status=status.HTTP_200_OK)
     
