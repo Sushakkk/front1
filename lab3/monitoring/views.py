@@ -41,7 +41,7 @@ class ThreatList(APIView):
         if 'price_from' in request.GET and 'price_to' in request.GET:
             threats = self.model_class.objects.filter(price__lte=request.GET['price_to'],price__gte=request.GET['price_from'])
             if 'name' in request.GET:
-                threats = self.model_class.objects.filter(threat_name__icontains=request.GET['name'])
+                threats = threats.filter(threat_name__icontains=request.GET['name'])
         elif 'name' in request.GET:
             threats = self.model_class.objects.filter(threat_name__icontains=request.GET['name'])
         else:
@@ -324,7 +324,10 @@ class GetRequests(APIView):
         responses={200: RequestSerializer()}
     )
     def get(self, request, pk):
-        req = get_object_or_404(Request, pk=pk)
+        if Request.objects.filter(pk=pk).exclude(status='deleted').exists():
+            req = Request.objects.get(pk=pk)
+        else:
+            return Response(status=status.HTTP_404_NOT_FOUND)
         serializer = RequestSerializer(req)
 
         threat_requests = RequestThreat.objects.filter(request=req)
