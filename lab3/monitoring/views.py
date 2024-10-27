@@ -40,8 +40,13 @@ class ThreatList(APIView):
     def get(self, request):
         if 'price_from' in request.GET and 'price_to' in request.GET:
             threats = self.model_class.objects.filter(price__lte=request.GET['price_to'],price__gte=request.GET['price_from'])
+            if 'name' in request.GET:
+                threats = self.model_class.objects.filter(threat_name__icontains=request.GET['name'])
+        elif 'name' in request.GET:
+            threats = self.model_class.objects.filter(threat_name__icontains=request.GET['name'])
         else:
             threats = self.model_class.objects.all()
+
         
         serializer = self.serializer_class(threats, many=True)
         resp = serializer.data
