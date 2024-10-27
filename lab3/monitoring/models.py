@@ -33,6 +33,7 @@ class RequestThreat(models.Model):
     request = models.ForeignKey(Request, on_delete=models.CASCADE, related_name='request_threats')
     threat = models.ForeignKey(Threat, on_delete=models.CASCADE)
     price = models.BigIntegerField(null=True)
+    comment = models.TextField(null=True)
 
     class Meta:
         managed = True

@@ -339,7 +339,7 @@ class GetRequests(APIView):
         for id in threats_ids:
             threats_in_request.append(get_object_or_404(Threat,pk=id))
 
-        threats_serializer = ThreatListSerializer(threats_in_request,many=True)
+        threats_serializer = ThreatListInRequestSerializer(threats_in_request,many=True,context={'req_id':pk})
         response = serializer.data
         response['threats'] = threats_serializer.data
 
