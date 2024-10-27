@@ -22,6 +22,7 @@ a:link {
 
 .site-name {
   font-size: 1.25em;
+  color: white;
 }
 
 .site-name:hover {
@@ -83,6 +84,7 @@ div {
   border: 1px solid rgba(60, 60, 60, .12);
 
   height: 30em;
+  width: 105%;
   justify-content: space-between;
   box-sizing: border-box;
 }
@@ -103,6 +105,7 @@ a {
 
 .card__image {
   flex-basis: 50%;
+  margin-left: 3%;
   width:360px;
 }
 
@@ -128,9 +131,10 @@ a {
   margin-left: 10px; /* Отступ слева, чтобы отделить от кнопки "Поиск" */
   text-align: right;
   white-space: nowrap; /* Запрещает перенос текста на новую строку */
+  color: white;
 }
 
-.search-form {s
+.search-form {
   display: flex;
   gap: 10px;
   flex-grow: 1;
@@ -211,6 +215,7 @@ a {
   flex-basis: 50%;
   max-width:720px;
   margin-top: 2%;
+  margin-bottom: 2%;
 }
 
 
@@ -344,7 +349,9 @@ a {
   font-size: 1em;
   height: 38px;
   padding: 3px;
-  margin-bottom: 10%;
+  margin-bottom: 8%;
+  margin-top: 2%;
+  margin-left: 3%;
   background-color: rgb(46, 44, 44);
   color: white;
   border: 0;

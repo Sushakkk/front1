@@ -5,38 +5,36 @@ import './App.css';
 const RequestPage = () => {
   const { reqId } = useParams();
   const [currentThreats, setCurrentThreats] = useState([]);
+  const [loading, setLoading] = useState(true); // Для состояния загрузки
+  const [error, setError] = useState(null); // Для обработки ошибок
 
   useEffect(() => {
-    // Моковые данные угроз для текущей заявки
-    const mockThreats = [
-      {
-        threat_name: 'Защита сети',
-        company_name: 'Компания A',
-        price: 1000,
-        comment: 'Ежемесячный мониторинг',
-        img_url: 'http://127.0.0.1:9000/static/network.jpg'
-      },
-      {
-        threat_name: 'Антивирус',
-        company_name: 'Компания B',
-        price: 1500,
-        comment: 'Раз в полгода',
-        img_url: 'http://127.0.0.1:9000/static/network.jpg'
-      },
-      {
-        threat_name: 'Веб-защита',
-        company_name: 'Компания C',
-        price: 1200,
-        comment: 'Защита веб-приложений',
-        img_url: 'http://127.0.0.1:9000/static/network.jpg'
+    const fetchRequestData = async () => {
+      if (!reqId) {
+        setLoading(false); // Если reqId не установлен, выходим из функции
+        return;
       }
-    ];
 
-    // Устанавливаем данные угроз
-    setCurrentThreats(mockThreats);
+      try {
+        const response = await fetch(`/api/requests/${reqId}/`);
+        if (!response.ok) {
+          throw new Error('Ошибка загрузки данных! Заявка не активна или необходимо авторизоваться!')
+        }
+        const requestData = await response.json();
+        setCurrentThreats(requestData.threats); // Устанавливаем угрозы из ответа
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchRequestData();
   }, [reqId]);
 
   const handleDelete = async () => {
+    if (!reqId) return; // Если reqId не установлен, ничего не делаем
+
     try {
       const response = await fetch('/del_request', {
         method: 'POST',
@@ -58,11 +56,24 @@ const RequestPage = () => {
   };
 
   const getCsrfToken = () => {
-    // Функция для получения CSRF токена (если необходимо)
     return document.cookie.split('; ')
       .find(row => row.startsWith('csrftoken'))
       ?.split('=')[1];
   };
+
+  // Обработка состояния загрузки и ошибок
+  if (loading) {
+    return <div>Загрузка данных заявки...</div>;
+  }
+
+  if (error) {
+    return <div>Ошибка: {error}</div>;
+  }
+
+  // Если reqId не установлен, ничего не выводим
+  if (!reqId) {
+    return null;
+  }
 
   return (
     <div>
@@ -80,7 +91,7 @@ const RequestPage = () => {
 
       <main className="site-body">
         <div className="cards-list-request">
-          {currentThreats && currentThreats.length > 0 ? (
+          {currentThreats.length > 0 ? (
             currentThreats.map((threat, index) => (
               <div key={index} className="card card-request">
                 <div className="card__content">
@@ -96,9 +107,9 @@ const RequestPage = () => {
                     <tbody>
                       <tr>
                         <td>{threat.threat_name}</td>
-                        <td>{threat.company_name}</td>
+                        <td>{threat.company_name || 'Не указана'}</td>
                         <td>{threat.price} ₽</td>
-                        <td>{threat.comment}</td>
+                        <td>{threat.short_description || 'Нет комментариев'}</td>
                       </tr>
                     </tbody>
                   </table>
