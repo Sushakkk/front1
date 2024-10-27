@@ -5,6 +5,7 @@ html {
   font-size: 16px;
   height: 100%; /* Устанавливаем высоту на всю страницу */
   width: 100%;
+  overflow-x: hidden; /* Скрыть горизонтальный скролл */
 }
 
 body {
@@ -43,7 +44,6 @@ div {
   width: auto;
   background-color: #333;
   padding: 10px 20px;
-  height: 130%;
   width: 100%;
 }
 
@@ -391,3 +391,88 @@ a {
 }
 
 
+.price-input {
+  width: 120px; /* Ширина для полей ввода цен */
+  height: 32px;
+  background-color: rgb(46, 44, 44);
+  padding: 3px;
+  border: 0;
+  border-radius: 3px;
+  color: white;
+}
+
+.price-input:focus {
+  outline: none !important;
+  border: 1px solid black;
+  color: white;
+}
+
+.home-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: white; /* Цвет текста */
+  font-family: "Arial", monospace; /* Шрифт */
+  text-align: center; /* Центрирование текста */
+  padding-top: 10%;
+}
+
+.home-title {
+  font-size: 2.5em; /* Размер заголовка */
+  margin-bottom: 20px; /* Отступ снизу */
+}
+
+.home-description {
+  font-size: 1.2em; /* Размер описания */
+  margin-bottom: 40px; /* Отступ снизу */
+  max-width: 600px; /* Максимальная ширина описания */
+  line-height: 1.5; /* Межстрочный интервал */
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.services-button {
+  padding: 10px 20px; /* Отступы внутри кнопки */
+  font-size: 1em; /* Размер шрифта кнопки */
+  background-color: #00A88E; /* Цвет кнопки */
+  color: white; /* Цвет текста на кнопке */
+  border: none; /* Убираем рамку */
+  border-radius: 5px; /* Закругление углов */
+  cursor: pointer; /* Указатель при наведении */
+  transition: background-color 0.3s; /* Плавный переход цвета кнопки */
+}
+
+.services-button:hover {
+  background-color: #008B6B; /* Цвет кнопки при наведении */
+}
+
+.navbar {
+  margin-right: 46.5%;
+}
+.navbar-link {
+  color: white; /* Цвет текста */
+  text-decoration: none; /* Убираем подчеркивание */
+  padding: 10px 15px; /* Отступы для ссылок */
+  transition: background-color 0.3s; /* Плавный переход */
+}
+
+.navbar-link:hover {
+  background-color: #00A88E; /* Цвет фона при наведении */
+}
+
+.breadcrumbs {
+  display: flex;
+  justify-content: center; /* Центрирование */
+  margin-bottom: 20px; /* Отступ снизу */
+  color: white; /* Цвет текста */
+}
+
+.breadcrumbs a {
+  color: #00A88E; /* Цвет ссылок */
+  text-decoration: none; /* Убираем подчеркивание */
+}
+
+.breadcrumbs span {
+  color: white; /* Цвет разделителей */
+}

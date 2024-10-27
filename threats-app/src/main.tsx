@@ -4,6 +4,7 @@ import App from './App.tsx';
 import MainPage from './mainPage';
 import RequestPage from './requestPage';
 import ThreatDescription from './descriptionPage';
+import HomePage from './homePage.tsx';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import './index.css';
 import './App.css';
@@ -12,6 +13,10 @@ import './App.css';
 const router = createBrowserRouter([
   {
     path: '/',
+    element: <HomePage />
+  },
+  {
+    path: '/main',
     element: <MainPage />
   },
   {

@@ -1,12 +1,48 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import './App.css';
+import Navbar from './Navbar';
+import Breadcrumbs from './Breadcrumbs';
+
+// Мок-данные для заявок
+const mockRequests = [
+  {
+    reqId: '1',
+    threats: [
+      {
+        threat_name: 'Угроза 1',
+        company_name: 'Компания A',
+        price: 1500,
+        short_description: 'Краткое описание угрозы 1.',
+      },
+      {
+        threat_name: 'Угроза 2',
+        company_name: 'Компания B',
+        price: 2000,
+        short_description: 'Краткое описание угрозы 2.',
+      },
+    ],
+  },
+  {
+    reqId: '2',
+    threats: [
+      {
+        threat_name: 'Угроза 3',
+        company_name: 'Компания C',
+        price: 1200,
+        short_description: 'Краткое описание угрозы 3.',
+      },
+    ],
+  },
+];
+
+const defaultImageUrl = 'http://127.0.0.1:9000/static/network.jpg';
 
 const RequestPage = () => {
   const { reqId } = useParams();
   const [currentThreats, setCurrentThreats] = useState([]);
   const [loading, setLoading] = useState(true); // Для состояния загрузки
-  const [error, setError] = useState(null); // Для обработки ошибок
+  const [errorMessage, setErrorMessage] = useState(''); // Для обработки ошибок
 
   useEffect(() => {
     const fetchRequestData = async () => {
@@ -17,13 +53,22 @@ const RequestPage = () => {
 
       try {
         const response = await fetch(`/api/requests/${reqId}/`);
+        
         if (!response.ok) {
-          throw new Error('Ошибка загрузки данных! Заявка не активна или необходимо авторизоваться!')
+          throw new Error('Ошибка загрузки данных! Заявка не активна или необходимо авторизоваться!');
         }
+
         const requestData = await response.json();
         setCurrentThreats(requestData.threats); // Устанавливаем угрозы из ответа
       } catch (err) {
-        setError(err.message);
+        // Если произошла ошибка, используем мок-данные только если нет соединения
+        const mockRequest = mockRequests.find(request => request.reqId === reqId);
+        
+        if (mockRequest) {
+          setCurrentThreats(mockRequest.threats);
+        } else {
+          setErrorMessage('Заявка не найдена');
+        }
       } finally {
         setLoading(false);
       }
@@ -63,11 +108,30 @@ const RequestPage = () => {
 
   // Обработка состояния загрузки и ошибок
   if (loading) {
-    return <div>Загрузка данных заявки...</div>;
+    return (
+      <div>
+        <header className="site-header">
+          <a href="/" className="site-name">Мониторинг угроз</a>
+          <Navbar /> {/* Добавляем Navbar */}
+        </header>
+        <Breadcrumbs />
+        <div>Загрузка данных заявки...</div>
+      </div>
+    );
   }
 
-  if (error) {
-    return <div>Ошибка: {error}</div>;
+  // Если ошибка произошла, выводим сообщение
+  if (errorMessage) {
+    return (
+      <div>
+        <header className="site-header">
+          <a href="/" className="site-name">Мониторинг угроз</a>
+          <Navbar /> {/* Добавляем Navbar */}
+        </header>
+        <Breadcrumbs />
+        <div>{errorMessage}</div>
+      </div>
+    );
   }
 
   // Если reqId не установлен, ничего не выводим
@@ -78,11 +142,10 @@ const RequestPage = () => {
   return (
     <div>
       <header className="site-header">
-        <a href="/">
-          <div className="site-name">Мониторинг угроз</div>
-        </a>
+        <a href="/" className="site-name">Мониторинг угроз</a>
+        <Navbar /> {/* Добавляем Navbar */}
       </header>
-
+      <Breadcrumbs />
       <div className="request-buttons">
         <button onClick={handleDelete} className="del-button">
           Удалить
@@ -114,7 +177,7 @@ const RequestPage = () => {
                     </tbody>
                   </table>
                 </div>
-                <img src={threat.img_url} alt={threat.threat_name} className="card__image card__image-request" />
+                <img src={threat.img_url ? threat.img_url : defaultImageUrl} alt={threat.threat_name} className="card__image card__image-request" />
               </div>
             ))
           ) : (
