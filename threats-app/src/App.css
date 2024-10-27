@@ -61,6 +61,7 @@ div {
 }
 
 .card__content {
+  margin-top: 4%;
   margin-left: 20px;
   text-decoration: none;
   color: white;
@@ -195,7 +196,6 @@ a {
 
 .card_overview {
   background-color: #1a1a1a;
-  padding: 24px 30px;
   box-shadow: 0 12px 12px #ffffff0d;
   display: flex;
   flex-direction: column;
@@ -272,7 +272,7 @@ a {
   width: 300px;
   height: 150px;
   position: relative;
-  top: -80px;
+  top: -33%;
 }
 
 .card_description-request {
@@ -359,7 +359,7 @@ a {
 }
 
 .del-button {
-  margin-top: 20%;
+  margin-top: 3%;
   width: auto;
   font-size: 1em;
   height: 38px;
