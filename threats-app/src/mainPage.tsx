@@ -1,26 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import './App.css'; // Подключаем стили
-import { useNavigate } from 'react-router-dom';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import { useNavigate, Link } from 'react-router-dom';
 import Breadcrumbs from './Breadcrumbs';
 import Navbar from './Navbar';
 
-// Мок-данные угроз
 const mockThreats = [
-  {
-    pk: 1,
-    threat_name: 'Угроза 1',
-    short_description: 'Описание угрозы 1'
-  },
-  {
-    pk: 2,
-    threat_name: 'Угроза 2',
-    short_description: 'Описание угрозы 2',
-  },
-  {
-    pk: 3,
-    threat_name: 'Угроза 3',
-    short_description: 'Описание угрозы 3',
-  },
+  { pk: 1, threat_name: 'Угроза 1', short_description: 'Описание угрозы 1' },
+  { pk: 2, threat_name: 'Угроза 2', short_description: 'Описание угрозы 2' },
+  { pk: 3, threat_name: 'Угроза 3', short_description: 'Описание угрозы 3' },
 ];
 
 const MainPage = () => {
@@ -38,17 +25,14 @@ const MainPage = () => {
       try {
         const response = await fetch('/api/threats/');
         const threatsData = await response.json();
-
         const filteredData = threatsData.filter(item => item.pk !== undefined);
         const requestData = threatsData.find(item => item.request);
-
         setThreats(filteredData);
         setFilteredThreats(filteredData);
         setCurrentRequestId(requestData?.request?.pk || null);
         setCurrentCount(requestData?.request?.threats_amount || 0);
       } catch (error) {
         console.error('Ошибка при загрузке данных угроз:', error);
-        // Если произошла ошибка, используем мок-данные
         setThreats(mockThreats);
         setFilteredThreats(mockThreats);
         const requestData = mockThreats.find(item => item.request);
@@ -56,7 +40,6 @@ const MainPage = () => {
         setCurrentCount(requestData?.request?.threats_amount || 0);
       }
     };
-
     fetchThreats();
   }, []);
 
@@ -65,7 +48,6 @@ const MainPage = () => {
     try {
       const response = await fetch(`/api/threats/?name=${inputValue}&price_from=${priceFrom}&price_to=${priceTo}`);
       const result = await response.json();
-
       const filteredResult = result.filter(item => item.pk !== undefined);
       setFilteredThreats(filteredResult);
     } catch (error) {
@@ -77,16 +59,11 @@ const MainPage = () => {
     try {
       const response = await fetch('/add_threat', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ threat_id: threatId }),
       });
-      if (response.ok) {
-        alert('Угроза добавлена');
-      } else {
-        alert('Ошибка при добавлении угрозы');
-      }
+      if (response.ok) alert('Угроза добавлена');
+      else alert('Ошибка при добавлении угрозы');
     } catch (error) {
       console.error('Ошибка при добавлении угрозы:', error);
     }
@@ -95,67 +72,91 @@ const MainPage = () => {
   const defaultImageUrl = 'http://127.0.0.1:9000/static/network.jpg';
 
   return (
-    <div>
-      <header className="site-header">
-        <a href="/" className="site-name">Мониторинг угроз</a>
+    <div className="container-fluid bg-dark text-light min-vh-100">
+      {/* Шапка */}
+      <header className="d-flex justify-content-between align-items-center px-5 py-3" style={{ backgroundColor: '#333', height: '70%', maxHeight: '60px', width: '1920px', marginLeft:'-30px' }}>
+        <a href="/" className="text-light fs-4">Мониторинг угроз</a>
         <Navbar />
       </header>
+
+      {/* Навигация */}
       <Breadcrumbs />
-      <div className="site-body">
-        <div className="search">
-          <form onSubmit={handleSearchSubmit} className="search-form">
+
+      {/* Форма поиска */}
+      <div className="container my-4">
+        <form onSubmit={handleSearchSubmit} className="row g-3 align-items-center">
+          <div className="col">
             <input
               type="text"
-              name="threat_name"
+              className="form-control"
+              placeholder="Имя угрозы"
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
-              className="search-bar"
-              placeholder="Имя угрозы"
             />
+          </div>
+          <div className="col">
             <input
               type="number"
-              name="price_from"
+              className="form-control"
+              placeholder="Цена от"
               value={priceFrom}
               onChange={(e) => setPriceFrom(e.target.value)}
-              className="price-input"
-              placeholder="Цена от"
             />
+          </div>
+          <div className="col">
             <input
               type="number"
-              name="price_to"
+              className="form-control"
+              placeholder="Цена до"
               value={priceTo}
               onChange={(e) => setPriceTo(e.target.value)}
-              className="price-input"
-              placeholder="Цена до"
             />
-            <input type="submit" value="Поиск" className="search-button" />
-          </form>
-          <a href={`/requests/${currentRequestId}`} className="current-request">
-            Текущая заявка ({currentCount})
-          </a>
-        </div>
+          </div>
+          <div className="col-auto">
+            <button type="submit" className="btn btn-success">Поиск</button>
+          </div>
+          <div className="col-auto">
+            <a
+              href={`/requests/${currentRequestId}`}
+              className="btn btn-outline-success"
+              style={{ marginLeft: '10px' }} // Добавлен отступ слева
+            >
+              Текущая заявка ({currentCount})
+            </a>
+          </div>
+        </form>
+      </div>
 
-        <div className="cards-list">
+      {/* Список угроз */}
+      <div className="container">
+        <div className="row row-cols-1 row-cols-md-3 g-4">
           {filteredThreats.map((threat) => (
-            <div key={threat.pk} className="card">
-              <a href={`/description/${threat.pk}`}>
-                <div className="card__content card__content-request">
-                  <h3 className="card__name">{threat.threat_name}</h3>
-                  <div className="card_description">{threat.short_description}</div>
+            <div key={threat.pk} className="col">
+              <Link to={`/description/${threat.pk}`} className="text-decoration-none">
+                <div className="card h-100 bg-dark text-light border-light">
+                  <img
+                    src={threat.img_url || defaultImageUrl}
+                    className="card-img-top"
+                    alt={threat.threat_name}
+                    style={{ marginLeft: '-4%' }}
+                  />
+                  <div className="card-body">
+                    <h5 className="card-title">{threat.threat_name}</h5>
+                    <p className="card-text">{threat.short_description}</p>
+                  </div>
+                  <div className="card-footer text-center">
+                    <button
+                      className="btn btn-outline-success"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleAddThreat(threat.pk);
+                      }}
+                    >
+                      Добавить
+                    </button>
+                  </div>
                 </div>
-                <img src={threat.img_url ? threat.img_url : defaultImageUrl} alt={threat.threat_name} className="card__image" />
-              </a>
-              <div className="buttons">
-                <button
-                  onClick={(e) => {
-                    e.preventDefault(); // Предотвращаем переход по ссылке
-                    handleAddThreat(threat.pk);
-                  }}
-                  className="add-button"
-                >
-                  Добавить
-                </button>
-              </div>
+              </Link>
             </div>
           ))}
         </div>

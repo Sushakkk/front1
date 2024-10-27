@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import './App.css'; // Подключаем стили
+import 'bootstrap/dist/css/bootstrap.min.css';
 import Navbar from './Navbar';
 import Breadcrumbs from './Breadcrumbs';
 
@@ -67,39 +67,52 @@ const ThreatDescription = () => {
 
   // Обработка состояния загрузки и ошибок
   if (loading) {
-    return <div>Загрузка данных угрозы...</div>;
+    return <div className="text-center my-5">Загрузка данных угрозы...</div>;
   }
 
   if (error) {
-    return <div>Ошибка: {error}</div>;
+    return <div className="text-danger text-center my-5">Ошибка: {error}</div>;
   }
 
   // Если данные угрозы загружены
   return (
-    <div>
-      <header className="site-header">
-        <a href="/" className="site-name">Мониторинг угроз</a>
-        <Navbar /> {/* Добавляем Navbar */}
+    <div className="container-fluid bg-dark text-light min-vh-100">
+      {/* Шапка */}
+      <header className="d-flex justify-content-between align-items-center px-5 py-3" style={{ backgroundColor: '#333', height: '70px' }}>
+        <a href="/" className="text-light fs-4">Мониторинг угроз</a>
+        <Navbar />
       </header>
+      
+      {/* Навигация */}
       <Breadcrumbs />
 
-      <main className="site-body">
-        <div className="card_overview">
-          <div className="card__content">
-            <h3 className="card__name">{threat.threat_name}</h3>
-            <div className="card_description">{threat.description}</div>
+      <main className="container my-4">
+        <div className="card bg-dark text-light border-light" style={{ height:'230px'}}>
+          <div className="row g-0">
+            <div className="col-md-6">
+              <div className="card-body">
+                <h3 className="card-title">{threat.threat_name}</h3>
+                <p className="card-text">{threat.description}</p>
 
-            <div className="card__statistics">
-              <div className="card__statistics__header">Статистика</div>
-              <div className="card__statistics__item">
-                Количество обнаружений: {threat.detections}
-              </div>
-              <div className="card__statistics__item">
-                Средняя цена мониторинга: {threat.price} ₽
+                <div className="mt-4">
+                  <h5 className="card-title">Статистика</h5>
+                  <p className="card-text">
+                    Количество обнаружений: <strong>{threat.detections}</strong>
+                  </p>
+                  <p className="card-text">
+                    Средняя цена мониторинга: <strong>{threat.price} ₽</strong>
+                  </p>
+                </div>
               </div>
             </div>
+            <div className="col-md-6">
+              <img 
+                src={threat.img_url || defaultImageUrl} 
+                alt={threat.threat_name} 
+                className="img-fluid rounded-start"  style={{ height:'210px',marginTop:'10px',marginLeft:'53%' }}
+              />
+            </div>
           </div>
-          <img src={threat.img_url ? threat.img_url : defaultImageUrl} alt={threat.threat_name} className="card__image__description" />
         </div>
       </main>
     </div>

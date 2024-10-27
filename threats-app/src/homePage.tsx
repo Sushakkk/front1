@@ -1,36 +1,23 @@
-// HomePage.js
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import './App.css'; // Подключаем стили
+import 'bootstrap/dist/css/bootstrap.min.css';
 import Navbar from './Navbar';
-import Breadcrumbs from './Breadcrumbs';
 
-const HomePage = () => {
-  const navigate = useNavigate();
-
-  const handleNavigateToServices = () => {
-    navigate('/main'); // Путь к основной странице с угрозами
-  };
-
+export default function HomePage() {
   return (
-    <div>
-    <header className="site-header">
-        <a href="/" className="site-name">Мониторинг угроз</a>
-        <Navbar /> {/* Добавляем Navbar */}
-
+    <div className="container-fluid bg-dark text-light min-vh-100 d-flex flex-column">
+      {/* Шапка */}
+      <header className="d-flex justify-content-between align-items-center px-5 py-3" style={{ backgroundColor: '#333', height: '70%', maxHeight: '60px', width: '1920px', marginLeft:'-30px' }}>
+        <a href="/" className="text-light fs-4">Мониторинг угроз</a>
+        <Navbar />
       </header>
-      <Breadcrumbs />
-    <div className="home-container">
-      <div className="home-content">
-        <h1 className="home-title">Добро пожаловать!</h1>
-        <p className="home-description">Данный ресурс предназначен для мониторинга событий безопасности в компании.</p>
-        <button className="services-button" onClick={handleNavigateToServices}>
-          Список услуг
-        </button>
-      </div>
-    </div>
+
+      {/* Основной контент */}
+      <main className="flex-grow-1 d-flex flex-column align-items-center justify-content-center text-center">
+        <h2 className="display-4 fw-bold">Добро пожаловать!</h2>
+        <p className="lead mt-3 mb-5">
+          Данный ресурс предназначен для мониторинга событий безопасности в компании.
+        </p>
+        <a href="/main" className="btn btn-success btn-lg">Список услуг</a>
+      </main>
     </div>
   );
-};
-
-export default HomePage;
+}
