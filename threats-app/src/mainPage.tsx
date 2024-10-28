@@ -5,9 +5,9 @@ import Breadcrumbs from './Breadcrumbs';
 import Navbar from './Navbar';
 
 const mockThreats = [
-  { pk: 1, threat_name: 'Угроза 1', short_description: 'Описание угрозы 1' },
-  { pk: 2, threat_name: 'Угроза 2', short_description: 'Описание угрозы 2' },
-  { pk: 3, threat_name: 'Угроза 3', short_description: 'Описание угрозы 3' },
+  { pk: 1, threat_name: 'Угроза 1', short_description: 'Описание угрозы 1', img_url: 'http://127.0.0.1:9000/static/web.jpg' },
+  { pk: 2, threat_name: 'Угроза 2', short_description: 'Описание угрозы 2', img_url: 'http://127.0.0.1:9000/static/ddos.jpg' },
+  { pk: 3, threat_name: 'Угроза 3', short_description: 'Описание угрозы 3', img_url: 'http://127.0.0.1:9000/static/vulnerability.jpg' },
 ];
 
 const MainPage = () => {

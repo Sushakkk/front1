@@ -11,21 +11,24 @@ const mockThreats = [
     threat_name: 'Угроза 1',
     description: 'Подробное описание угрозы 1.',
     detections: 5,
-    price: 1500
+    price: 1500,
+     img_url: 'http://127.0.0.1:9000/static/web.jpg'
   },
   {
     pk: 2,
     threat_name: 'Угроза 2',
     description: 'Подробное описание угрозы 2.',
     detections: 3,
-    price: 2000
+    price: 2000,
+    img_url: 'http://127.0.0.1:9000/static/ddos.jpg'
   },
   {
     pk: 3,
     threat_name: 'Угроза 3',
     description: 'Подробное описание угрозы 3.',
     detections: 10,
-    price: 1200
+    price: 1200,
+     img_url: 'http://127.0.0.1:9000/static/vulnerability.jpg'
   },
 ];
 
@@ -109,7 +112,7 @@ const ThreatDescription = () => {
               <img 
                 src={threat.img_url || defaultImageUrl} 
                 alt={threat.threat_name} 
-                className="img-fluid rounded-start"  style={{ height:'210px',marginTop:'10px',marginLeft:'53%' }}
+                className="img-fluid rounded-start"  style={{ height:'210px',marginTop:'10px',marginLeft:'40%' }}
               />
             </div>
           </div>
